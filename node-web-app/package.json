@@ -1,0 +1,23 @@
+{
+  "name": "LoginApprovals",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "cfenv": "1.0.x",
+    "express": "4.13.x",
+    "ibm-mfp-web-sdk": "^8.0.2016051608",
+    "request": "latest",
+    "requirejs": "latest",
+    "socket.io": "^1.4.8"
+  },
+  "repository": {},
+  "engines": {
+    "node": "4.x"
+  },
+  "devDependencies": {
+    "nodemon": "^1.10.0"
+  }
+}
