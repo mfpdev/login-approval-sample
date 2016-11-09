@@ -11,6 +11,5 @@ public interface Constants {
     static final String APPROVER_KEY = "approverKey";
     static final String WEB_CLIENT_DATA = "webClientData";
 
-    static final String APPROVED_WEB_USER = "approvedWebUser";
-    static final String WAITING_FOR_APPROVAL_KEY = "waitingForApprovalKey";
+    static final String WAITING_FOR_APPROVAL_KEY = "waitingForApproval";
 }

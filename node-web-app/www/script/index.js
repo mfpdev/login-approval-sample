@@ -9,60 +9,59 @@ var clientId = null;
 var geocoder = new google.maps.Geocoder();
 
 
-var WebUserLoginChallengeHandler = WL.Client.createSecurityCheckChallengeHandler("WebUserLogin");
-var UserLoginChallengeHandler = WL.Client.createSecurityCheckChallengeHandler("UserLogin");
+var webUserLoginChallengeHandler = WL.Client.createSecurityCheckChallengeHandler("WebUserLogin");
+var userLoginChallengeHandler = WL.Client.createSecurityCheckChallengeHandler("UserLogin");
 
-UserLoginChallengeHandler.handleChallenge = function (challenge) {
-     UserLoginChallengeHandler.submitChallengeAnswer({"username" : "a", "password" : "a"});
+userLoginChallengeHandler.handleChallenge = function (challenge) {
+    userLoginChallengeHandler.submitChallengeAnswer({ "username": "a", "password": "a" });
+    showDiv("content", false);
+    showDiv("login", true);
+    showDiv("waitingForApproval", false);
 };
 
-WebUserLoginChallengeHandler.handleChallenge = function (challenge) {
-    if (challenge.waitingForApproval) {
-        alert(1);
-    } 
+webUserLoginChallengeHandler.handleChallenge = function (challenge) {
+    showDiv("waitingForApproval", true);
+    showDiv("login", false);
 };
 
-function sendWebData() {
+var onLoginClicked = function (username, password) {
+    userLoginChallengeHandler.submitChallengeAnswer({ "username": "a", "password": "a" });
+} 
+
+
+function showDiv(id, show) {
+    document.getElementById(id).style.display = show ? "block" : "none";
+}
+
+function sendWebData(callback) {
+    console.log("Sending web data to server");
     var resourceRequest = new WLResourceRequest("/adapters/LoginApprovalsAdapter/webClientData", WLResourceRequest.POST);
     resourceRequest.setQueryParameter("date", new Date().toString());
-    resourceRequest.setQueryParameter("agent", navigator.userAgent);
-
-    var location = "not available"
-    // Find the current location    
-    
     navigator.geolocation.getCurrentPosition(function (position) {
         // Set location to be latitude + longitude
-        location = position.coords.latitude + ":" + position.coords.longitude
+        console.log("Getting client location");
         if (position.coords) {
-            var latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-            geocoder.geocode({ 'latLng': latlng }, function (results, status) {
-                if (status == google.maps.GeocoderStatus.OK) {
-                    console.log(results)
-                    if (results[1]) {
-                        // Set location to be formatted_address
-                        location = results[0].formatted_address;
-                    }
+            console.log("Success getting client location");
+            resourceRequest.setQueryParameter("locationDescription", location);
+            resourceRequest.setQueryParameter("latitude", position.coords.latitude);
+            resourceRequest.setQueryParameter("longitude", position.coords.longitude);
+            resourceRequest.send().then(
+                function (response) {
+                    clientId = response.responseJSON["clientId"];
+                    console.log("Success getting client ID: " + clientId);
+
+                    callback();
+                    //Start listen to socket
+                    socket.on(clientId, function (data) {
+                        if (data.refresh) {
+                            webUserLoginChallengeHandler.submitChallengeAnswer({})
+                        }
+                    });
+                },
+                function (error) {
+                    alert(JSON.stringify(error));
                 }
-                //Set the formatted_address as location 
-                resourceRequest.setQueryParameter("location", location);
-                
-                resourceRequest.send().then(
-                    function (response) {
-                        clientId = response.responseJSON["clientId"];
-                        console.log("Client ID: " + clientId);
-                        
-                        //Start listen to socket
-                        socket.on(clientId, function (data) {
-                            if (data.refresh) {
-                                alert(1);
-                            }
-                        });
-                    },
-                    function (error) {
-                        alert(JSON.stringify(error));
-                    }
-                );
-            });
+            );
         }
     });
 }
@@ -71,7 +70,9 @@ function getWebUser() {
     var resourceRequest = new WLResourceRequest("/adapters/LoginApprovalsAdapter/user", WLResourceRequest.GET);
     resourceRequest.send().then(
         function (response) {
-            alert(JSON.stringify(response));
+            showDiv("waitingForApproval", false);
+            showDiv("content", true);
+            document.getElementById("helloUser") = "sss";
         },
         function (error) {
             alert(JSON.stringify(error));
@@ -81,7 +82,7 @@ function getWebUser() {
 
 WL.Client.init(wlInitOptions).then(
     function () {
-        sendWebData();
+        sendWebData(getWebUser);
     }, function (error) {
         alert(error);
     }

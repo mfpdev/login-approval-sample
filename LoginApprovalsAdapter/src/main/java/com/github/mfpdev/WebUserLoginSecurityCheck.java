@@ -29,7 +29,6 @@ import java.util.logging.Logger;
 import static com.github.mfpdev.Constants.*;
 
 public class WebUserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
-    private static final String PUSH_SERVER_URL_PROPERTY_KEY = "push_server_url";
     static Logger logger = Logger.getLogger(WebUserLoginSecurityCheck.class.getName());
 
 
@@ -57,7 +56,8 @@ public class WebUserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
     }
 
     protected boolean validateCredentials(Map<String, Object> credentials) {
-        return isApprovedWebClient();
+        boolean approved = isApprovedWebClient();
+        return approved;
     }
 
     protected Map<String, Object> createChallenge() {
@@ -89,8 +89,8 @@ public class WebUserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
         return challenge;
     }
 
-    public boolean isApprovedWebClient() {
-        return registrationContext.getRegisteredPublicAttributes().get(APPROVED_WEB_USER) != null;
+    private boolean isApprovedWebClient() {
+        return registrationContext.getRegisteredPublicAttributes().get(APPROVED_KEY) != null;
     }
 
     private String getMFServerURL() {
@@ -100,7 +100,6 @@ public class WebUserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
     private String getConfidentialClientCredentials() {
         return ((WebUserLoginSecurityCheckConfiguration)this.config).getConfidentialClientCredentials();
     }
-
 
     private String getOAuthTokenForPush (String appId) throws IOException {
         String url = getMFServerURL() + "/mfp/api/az/v1/token";
@@ -126,13 +125,19 @@ public class WebUserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
         String url = getMFServerURL() + "/imfpush/v1/apps/" + appIdentifier + "/messages";
         HttpPost httpPost = new HttpPost(url);
 
+        JSONObject payloadGCM = new JSONObject();
+        payloadGCM.put("platform", webClientData.getPlatform());
+        payloadGCM.put("os", webClientData.getOs());
+        payloadGCM.put("address", webClientData.getAddress());
+        payloadGCM.put("date", webClientData.getDate());
+
         String payload = "{\n" +
                 "  \"message\": {\n" +
-                "    \"alert\": \"Did you just login near " + webClientData.getLocation() + "?\"\n" +
+                "    \"alert\": \"Did you just login near " + webClientData.getAddress() + "?\"\n" +
                 "  },\n" +
                 "  \"settings\": {\n" +
                 "   \"gcm\": {\n" +
-                "       \"payload\": \"" + webClientData.getAgent() + ":" + webClientData.getDate() + ":" + webClientData.getLocation() + "\"\n" +
+                "       \"payload\":"  + payloadGCM.toString() + "\n" +
                 "   },\n" +
                 "  },\n" +
                 "  \"notificationType\":1,\n" +
@@ -151,5 +156,4 @@ public class WebUserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
         CloseableHttpResponse response = httpclient.execute(httpPost);
         return response.getStatusLine().getStatusCode() == HttpStatus.SC_OK;
     }
-
 }

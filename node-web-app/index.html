@@ -19,24 +19,38 @@
 <html>
 
 <head>
-  <title>Login Approvals</title>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="www/stylesheets/style.css">
-  <script type="text/javascript" src="node_modules/ibm-mfp-web-sdk/ibmmfpf.js"></script>
-  <script type="text/javascript" src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
-  <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script> 
-  <script type="text/javascript" src="www/script/index.js"></script>
+	<title>Login Approvals</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="www/stylesheets/style.css">
+	<script type="text/javascript" src="node_modules/ibm-mfp-web-sdk/ibmmfpf.js"></script>
+	<script type="text/javascript" src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+	<script type="text/javascript" src="www/script/index.js"></script>
 </head>
 
 <body>
-  <div id="title">
-    <p>Web Login</p>
-  </div>
-     <div id="content">
-        <button onclick="getWebUser()">Get user</button>
-      </div>
-  </div>
+	<div id="content">
+    <label id="helloUser"></label>
+	</div>
+	<div id="login">
+		<div class="container">
+			<label><b>Username</b></label>
+			<input type="text" placeholder="Enter Username" name="username" required>
+
+			<label><b>Password</b></label>
+			<input type="password" placeholder="Enter Password" name="password" required>
+
+			<button onclick="getWebUser()">Login</button>
+		</div>
+	</div>
+  <div id="waitingForApproval">
+		<div class="container">
+			<label><b>Waiting for approval ...</b></label>
+		</div>
+	</div>
+	</div>
 </body>
+
 </html>

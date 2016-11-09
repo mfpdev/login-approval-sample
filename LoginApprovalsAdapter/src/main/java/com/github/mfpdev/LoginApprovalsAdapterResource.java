@@ -7,35 +7,35 @@
 
 package com.github.mfpdev;
 
+import com.google.code.geocoder.Geocoder;
+import com.google.code.geocoder.GeocoderRequestBuilder;
+import com.google.code.geocoder.model.*;
 import com.ibm.mfp.server.registration.external.model.AuthenticatedUser;
 import com.ibm.mfp.server.registration.external.model.ClientData;
-import com.ibm.mfp.server.security.external.checks.RegistrationContext;
 import com.ibm.mfp.server.security.external.resource.AdapterSecurityContext;
 import com.ibm.mfp.server.security.external.resource.ClientSearchCriteria;
+import eu.bitwalker.useragentutils.Browser;
+import eu.bitwalker.useragentutils.UserAgent;
+import eu.bitwalker.useragentutils.Version;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import com.ibm.mfp.adapter.api.ConfigurationAPI;
 import com.ibm.mfp.adapter.api.OAuthSecurity;
@@ -80,14 +80,6 @@ public class LoginApprovalsAdapterResource {
 		return result;
 	}
 
-	private void setAsApprover() {
-		ClientData clientData = securityContext.getClientRegistrationData();
-		clientData.getPublicAttributes().put(APPROVER_KEY, securityContext.getAuthenticatedUser().getId());
-
-		securityContext.storeClientRegistrationData(clientData);
-	}
-
-
 	@ApiOperation(value = "Approve web client", notes = "approve web client login")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Return true after send the refresh event to the client") })
 	@POST
@@ -101,21 +93,6 @@ public class LoginApprovalsAdapterResource {
 			clientsData.get(0).getPublicAttributes().put(APPROVED_KEY, APPROVED);
 			securityContext.storeClientRegistrationData(clientsData.get(0));
 			return sendRefreshEvent(uuid);
-		}
-
-		return false;
-	}
-
-
-	private boolean sendRefreshEvent(String uuid) {
-		String url = configApi.getPropertyValue(WEB_URL_FOR_NOTIFY);
-		url = url + "/refresh/" + uuid;
-		HttpGet httpGet = new HttpGet(url);
-		try {
-			CloseableHttpResponse response = httpclient.execute(httpGet);
-			return response.getStatusLine().getStatusCode() == HttpStatus.SC_OK;
-		} catch (IOException e) {
-			logger.info("Cannot send refresh event to " + url);
 		}
 		return false;
 	}
@@ -131,15 +108,29 @@ public class LoginApprovalsAdapterResource {
 			@ApiResponse(code = 200, message = "Return the authenticated user",
 					response = Boolean.class)
 	})
-	public Map<String, String> getWebClientData(@QueryParam("date") String dateString, @QueryParam("location") String location, @QueryParam("agent") String agent ) {
-		WebClientData webClientData = new WebClientData(location, dateString, agent);
+	public Map<String, String> getWebClientData(@QueryParam("date") String dateString, @QueryParam("latitude") String latitude, @QueryParam("longitude") String longitude) {
+		double lat = Double.valueOf(latitude);
+		double lon = Double.valueOf(longitude);
+
+		String platform = securityContext.getClientRegistrationData().getRegistration().getDevice().getPlatform();
+
+		UserAgent userAgent = UserAgent.parseUserAgentString(platform);
+
+		String platformName = userAgent.getBrowser().getName() + " " + userAgent.getBrowserVersion().getVersion();
+		String os = userAgent.getOperatingSystem().getName();
+
+
+		WebClientData webClientData = new WebClientData(dateString, os, platformName, lat, lon, getLocationAddress(lat, lon));
 		securityContext.getClientRegistrationData().getProtectedAttributes().put(WEB_CLIENT_DATA, webClientData);
+		securityContext.getClientRegistrationData().getPublicAttributes().put(WEB_CLIENT_UUID, this.securityContext.getClientRegistrationData().getClientId());
 		securityContext.storeClientRegistrationData(securityContext.getClientRegistrationData());
+
 
 		Map<String, String> result = new HashMap<>();
 		result.put("clientId", securityContext.getClientRegistrationData().getClientId());
 		return result;
 	}
+
 
 	@Path("/user")
 	@GET
@@ -157,5 +148,36 @@ public class LoginApprovalsAdapterResource {
 	public AuthenticatedUser getUser() {
 		//sendRefreshEvent(securityContext.getClientRegistrationData().getClientId());
 		return securityContext.getAuthenticatedUser();
+	}
+
+	private String getLocationAddress (double latitude, double longitude) {
+		final Geocoder geocoder = new Geocoder();
+		GeocoderRequest geocoderRequest = new GeocoderRequestBuilder().setLocation(new LatLng(BigDecimal.valueOf(latitude),BigDecimal.valueOf(longitude))).getGeocoderRequest();
+		GeocodeResponse geocoderResponse = geocoder.geocode(geocoderRequest);
+		List<GeocoderResult> results = geocoderResponse.getResults();
+		if (results.size() > 0) {
+			return results.get(0).getFormattedAddress();
+		}
+		return latitude + ":" + latitude;
+	}
+
+	private boolean sendRefreshEvent(String uuid) {
+		String url = configApi.getPropertyValue(WEB_URL_FOR_NOTIFY);
+		url = url + "/refresh/" + uuid;
+		HttpGet httpGet = new HttpGet(url);
+		try {
+			CloseableHttpResponse response = httpclient.execute(httpGet);
+			return response.getStatusLine().getStatusCode() == HttpStatus.SC_OK;
+		} catch (IOException e) {
+			logger.info("Cannot send refresh event to " + url);
+		}
+		return false;
+	}
+
+	private void setAsApprover() {
+		ClientData clientData = securityContext.getClientRegistrationData();
+		clientData.getPublicAttributes().put(APPROVER_KEY, securityContext.getAuthenticatedUser().getId());
+
+		securityContext.storeClientRegistrationData(clientData);
 	}
 }
