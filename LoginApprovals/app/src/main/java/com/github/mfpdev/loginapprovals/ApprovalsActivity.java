@@ -1,17 +1,12 @@
 package com.github.mfpdev.loginapprovals;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.ibm.mobilefirstplatform.clientsdk.android.push.api.MFPPush;
 import com.ibm.mobilefirstplatform.clientsdk.android.push.api.MFPPushException;
@@ -25,10 +20,13 @@ import com.worklight.wlclient.api.WLResourceRequest;
 import com.worklight.wlclient.api.WLResponse;
 import com.worklight.wlclient.api.WLResponseListener;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class ApprovalsActivity extends AppCompatActivity {
 
@@ -44,6 +42,8 @@ public class ApprovalsActivity extends AppCompatActivity {
      */
     private GoogleApiClient client;
 
+    private ListView approvalsListView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +51,7 @@ public class ApprovalsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initWLSDK();
+        approvalsListView = (ListView) findViewById(R.id.approvals_list_view);
     }
 
     private void addPushListener() {
@@ -75,17 +76,40 @@ public class ApprovalsActivity extends AppCompatActivity {
     }
 
     public void onButtonClicked(View view) {
-        getAppInstances();
+        getApprovedClients();
     }
 
-    protected void getAppInstances() {
+    protected void getApprovedClients() {
         URI adapterPath = URI.create("/adapters/LoginApprovalsAdapter/approvals");
         WLResourceRequest resourceRequest = new WLResourceRequest(adapterPath, WLResourceRequest.GET);
 
         resourceRequest.send(new WLResponseListener() {
             @Override
             public void onSuccess(WLResponse wlResponse) {
-                logger.debug("ApprovalsActivity" + wlResponse.getResponseJSON().toString());
+                try {
+                    JSONObject devices = new JSONObject(wlResponse.getResponseJSON().toString());
+                    Iterator<String> devicesIterator = devices.keys();
+                    if (devices.length() > 0) {
+                        String [] listItems = new String[devices.length()];
+                        int i = 0;
+                        while (devicesIterator.hasNext()) {
+                            listItems[i] = devicesIterator.next();
+                            i++;
+                        }
+                        final ArrayAdapter adapter = new ArrayAdapter(ApprovalsActivity.this, android.R.layout.simple_list_item_1, listItems);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                approvalsListView.setAdapter(adapter);
+                            }
+                        });
+                    }
+
+
+
+                } catch (JSONException e) {
+                    logger.error ("Cannot populate list of approved devices " + e.getMessage());
+                }
             }
 
             @Override

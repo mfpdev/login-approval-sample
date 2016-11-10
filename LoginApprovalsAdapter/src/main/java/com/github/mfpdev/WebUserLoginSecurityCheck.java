@@ -15,6 +15,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.HttpClientUtils;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -33,11 +34,10 @@ public class WebUserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
 
     private transient boolean denied = false;
 
-    private transient CloseableHttpClient httpclient = HttpClients.createDefault();
-
     @SecurityCheckReference
     private transient UserLoginSecurityCheck userLoginSecurityCheck;
 
+    private transient CloseableHttpClient httpclient = HttpClients.createDefault();
 
     @Override
     public WebUserLoginSecurityCheckConfiguration createConfiguration(Properties properties) {
@@ -109,6 +109,7 @@ public class WebUserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
     }
 
     private String getOAuthTokenForPush (String appId) throws IOException {
+        String token = null;
         String url = getMFServerURL() + "/mfp/api/az/v1/token";
         HttpPost httpPost = new HttpPost(url);
 
@@ -123,21 +124,22 @@ public class WebUserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
         CloseableHttpResponse response = httpclient.execute(httpPost);
         if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
             JSONObject tokenInfo = JSONObject.parse(response.getEntity().getContent());
-            return (String) tokenInfo.get("access_token");
+            token = (String) tokenInfo.get("access_token");
         }
-        return "";
+        HttpClientUtils.closeQuietly(response);
+        return token;
     }
 
-    private boolean sendApprovalPushNotification (WebClientData webClientData, String appIdentifier, String deviceId, String userId, String accessToken) throws IOException {
+    private int sendApprovalPushNotification (WebClientData webClientData, String appIdentifier, String deviceId, String userId, String accessToken) throws IOException {
         String url = getMFServerURL() + "/imfpush/v1/apps/" + appIdentifier + "/messages";
         HttpPost httpPost = new HttpPost(url);
 
         JSONObject payloadGCM = new JSONObject();
-        payloadGCM.put("platform", webClientData.getPlatform());
-        payloadGCM.put("os", webClientData.getOs());
-        payloadGCM.put("address", webClientData.getAddress());
-        payloadGCM.put("date", webClientData.getDate());
-        payloadGCM.put("clientId", webClientData.getClientId());
+        payloadGCM.put(PLATFORM_KEY, webClientData.getPlatform());
+        payloadGCM.put(OS_KEY, webClientData.getOs());
+        payloadGCM.put(ADDRESS_KEY, webClientData.getAddress());
+        payloadGCM.put(DATE_KEY, webClientData.getDate());
+        payloadGCM.put(CLIENT_ID_KEY, webClientData.getClientId());
 
         String payload = "{\n" +
                 "  \"message\": {\n" +
@@ -162,6 +164,8 @@ public class WebUserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
         httpPost.setHeader(contentTypeHeader);
         httpPost.setEntity(entity);
         CloseableHttpResponse response = httpclient.execute(httpPost);
-        return response.getStatusLine().getStatusCode() == HttpStatus.SC_OK;
+        int status = response.getStatusLine().getStatusCode();
+        HttpClientUtils.closeQuietly(response);
+        return status;
     }
 }

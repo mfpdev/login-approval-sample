@@ -26,25 +26,27 @@
 	<link rel="stylesheet" href="www/stylesheets/style.css">
 	<script type="text/javascript" src="node_modules/ibm-mfp-web-sdk/ibmmfpf.js"></script>
 	<script type="text/javascript" src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
-	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
 	<script type="text/javascript" src="www/script/index.js"></script>
 </head>
 
 <body>
+  <!-- Hello approved user -->
 	<div id="content">
-    <label id="helloUser"></label>
+    <span id="helloApprovedUser"></span>
 	</div>
-	<div id="login">
+	
+  <!-- Login screen -->
+  <div id="login">
 		<div class="container">
 			<label><b>Username</b></label>
-			<input type="text" placeholder="Enter Username" name="username" required>
-
+			<input type="text" placeholder="Enter Username" id="username" required>
 			<label><b>Password</b></label>
-			<input type="password" placeholder="Enter Password" name="password" required>
-
-			<button onclick="getWebUser()">Login</button>
+			<input type="password" placeholder="Enter Password" id="password" required>
+			<button onclick="onLoginClicked()">Login</button>
 		</div>
 	</div>
+
+  <!-- Waiting for approval -->
   <div id="waitingForApproval">
 		<div class="container">
 			<label><b>Waiting for approval ...</b></label>
@@ -52,5 +54,4 @@
 	</div>
 	</div>
 </body>
-
 </html>

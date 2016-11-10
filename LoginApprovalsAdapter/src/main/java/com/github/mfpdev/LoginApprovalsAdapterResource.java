@@ -9,41 +9,37 @@ package com.github.mfpdev;
 
 import com.google.code.geocoder.Geocoder;
 import com.google.code.geocoder.GeocoderRequestBuilder;
-import com.google.code.geocoder.model.*;
+import com.google.code.geocoder.model.GeocodeResponse;
+import com.google.code.geocoder.model.GeocoderRequest;
+import com.google.code.geocoder.model.GeocoderResult;
+import com.google.code.geocoder.model.LatLng;
+import com.ibm.mfp.adapter.api.ConfigurationAPI;
+import com.ibm.mfp.adapter.api.OAuthSecurity;
 import com.ibm.mfp.server.registration.external.model.AuthenticatedUser;
 import com.ibm.mfp.server.registration.external.model.ClientData;
 import com.ibm.mfp.server.security.external.resource.AdapterSecurityContext;
 import com.ibm.mfp.server.security.external.resource.ClientSearchCriteria;
-import eu.bitwalker.useragentutils.Browser;
 import eu.bitwalker.useragentutils.UserAgent;
-import eu.bitwalker.useragentutils.Version;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.HttpClientUtils;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-
-import com.ibm.mfp.adapter.api.ConfigurationAPI;
-import com.ibm.mfp.adapter.api.OAuthSecurity;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 
 import static com.github.mfpdev.Constants.*;
 
@@ -59,7 +55,6 @@ public class LoginApprovalsAdapterResource {
 	@Context
 	AdapterSecurityContext securityContext;
 
-
 	private CloseableHttpClient httpclient = HttpClients.createDefault();
 
 	@ApiOperation(value = "Get approved web instances", notes = "Return all the approved app instances")
@@ -68,16 +63,26 @@ public class LoginApprovalsAdapterResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/approvals")
 	@OAuthSecurity(scope = "appInstanceApprover")
-	public Map<String, String> getApprovedWebClients() {
+	public Map<String, Map<String,String>> getApprovedWebClients() {
 		setAsApprover();
 
-		ClientSearchCriteria clientSearchCriteria = new ClientSearchCriteria().byAttribute(APPROVED_KEY, APPROVED);
+		ClientSearchCriteria clientSearchCriteria = new ClientSearchCriteria().byAttribute(APPROVED_KEY, APPROVED).byUser(USER_LOGIN_SC_NAME, securityContext.getAuthenticatedUser().getId());
 		List<ClientData> clientsData = securityContext.findClientRegistrationData(clientSearchCriteria);
 
-		Map<String, String> result = new HashMap<>();
+		Map<String, Map<String,String>> allClients = new HashMap<>();
+		for (ClientData data : clientsData) {
+			WebClientData webClientData = data.getProtectedAttributes().get("webClientData", WebClientData.class);
+			Map<String, String> clientData = new HashMap<>();
+			clientData.put(ADDRESS_KEY, webClientData.getAddress());
+			clientData.put(DATE_KEY, webClientData.getDate());
+			clientData.put(PLATFORM_KEY, webClientData.getPlatform());
+			clientData.put(OS_KEY, webClientData.getOs());
 
-		result.put("approvals", "test");
-		return result;
+
+			allClients.put(webClientData.getClientId(), clientData);
+		}
+
+		return allClients;
 	}
 
 	@ApiOperation(value = "Approve web client", notes = "approve web client login")
@@ -167,22 +172,27 @@ public class LoginApprovalsAdapterResource {
 	}
 
 	private boolean sendRefreshEvent(String uuid) {
+		boolean status = false;
 		String url = configApi.getPropertyValue(WEB_URL_FOR_NOTIFY);
 		url = url + "/refresh/" + uuid;
 		HttpGet httpGet = new HttpGet(url);
+		CloseableHttpResponse response = null;
 		try {
-			CloseableHttpResponse response = httpclient.execute(httpGet);
-			return response.getStatusLine().getStatusCode() == HttpStatus.SC_OK;
+			response = httpclient.execute(httpGet);
+			status = response.getStatusLine().getStatusCode() == HttpStatus.SC_OK;
 		} catch (IOException e) {
 			logger.info("Cannot send refresh event to " + url);
+		} finally {
+			if (response != null) {
+				HttpClientUtils.closeQuietly(response);
+			}
 		}
-		return false;
+		return status;
 	}
 
 	private void setAsApprover() {
 		ClientData clientData = securityContext.getClientRegistrationData();
 		clientData.getPublicAttributes().put(APPROVER_KEY, securityContext.getAuthenticatedUser().getId());
-
 		securityContext.storeClientRegistrationData(clientData);
 	}
 }

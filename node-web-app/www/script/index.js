@@ -6,14 +6,11 @@ var wlInitOptions = {
 };
 
 var clientId = null;
-var geocoder = new google.maps.Geocoder();
-
-
 var webUserLoginChallengeHandler = WL.Client.createSecurityCheckChallengeHandler("WebUserLogin");
 var userLoginChallengeHandler = WL.Client.createSecurityCheckChallengeHandler("UserLogin");
 
+
 userLoginChallengeHandler.handleChallenge = function (challenge) {
-    userLoginChallengeHandler.submitChallengeAnswer({ "username": "a", "password": "a" });
     showDiv("content", false);
     showDiv("login", true);
     showDiv("waitingForApproval", false);
@@ -24,14 +21,17 @@ webUserLoginChallengeHandler.handleChallenge = function (challenge) {
     showDiv("login", false);
 };
 
-var onLoginClicked = function (username, password) {
-    userLoginChallengeHandler.submitChallengeAnswer({ "username": "a", "password": "a" });
+var onLoginClicked = function () {
+    var username = document.getElementById("username").value;
+    var password = document.getElementById("password").value;
+    userLoginChallengeHandler.submitChallengeAnswer({ "username": username, "password": password });
 } 
 
 
 function showDiv(id, show) {
     document.getElementById(id).style.display = show ? "block" : "none";
 }
+
 
 function sendWebData(callback) {
     console.log("Sending web data to server");
@@ -72,10 +72,11 @@ function getWebUser() {
         function (response) {
             showDiv("waitingForApproval", false);
             showDiv("content", true);
-            alert(JSON.stringify(response));
+            document.getElementById("helloApprovedUser").innerText = "Hello " + response.responseJSON.displayName;
         },
         function (error) {
-            alert(JSON.stringify(error));
+            showDiv("waitingForApproval", false);
+            document.getElementById("helloApprovedUser").innerText = "Something went wrong...";
         }
     );
 }
