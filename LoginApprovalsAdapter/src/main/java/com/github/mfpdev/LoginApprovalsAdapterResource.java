@@ -86,12 +86,18 @@ public class LoginApprovalsAdapterResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/approve")
 	@OAuthSecurity(scope = "appInstanceApprover")
-	public boolean approve(@QueryParam("clientId") String clientId) {
+	public boolean approve(@QueryParam("clientId") String clientId, @QueryParam("approve") Boolean approve) {
+		return approveClient(clientId, approve);
+	}
+
+	private boolean approveClient(String clientId, boolean approve) {
 		ClientSearchCriteria clientSearchCriteria = new ClientSearchCriteria().byAttribute(WEB_CLIENT_UUID, clientId);
 		List<ClientData> clientsData = securityContext.findClientRegistrationData(clientSearchCriteria);
 		if (clientsData.size() == 1) {
-			clientsData.get(0).getPublicAttributes().put(APPROVED_KEY, APPROVED);
-			securityContext.storeClientRegistrationData(clientsData.get(0));
+			if (approve) {
+				clientsData.get(0).getPublicAttributes().put(APPROVED_KEY, APPROVED);
+				securityContext.storeClientRegistrationData(clientsData.get(0));
+			}
 			return sendRefreshEvent(clientId);
 		}
 		return false;
@@ -146,7 +152,6 @@ public class LoginApprovalsAdapterResource {
 					response = Boolean.class)
 	})
 	public AuthenticatedUser getUser() {
-		//sendRefreshEvent(securityContext.getClientRegistrationData().getClientId());
 		return securityContext.getAuthenticatedUser();
 	}
 

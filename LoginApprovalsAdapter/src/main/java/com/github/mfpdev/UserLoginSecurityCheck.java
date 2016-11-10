@@ -73,6 +73,11 @@ public class UserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
         return this.registrationContext != null && this.registrationContext.getRegisteredUser() != null;
     }
 
+    @Override
+    public void logout() {
+        super.logout();
+    }
+
     public AuthenticatedUser getUser() {
         return registrationContext.getRegisteredUser();
     }

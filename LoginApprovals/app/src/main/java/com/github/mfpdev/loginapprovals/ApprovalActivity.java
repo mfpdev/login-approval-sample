@@ -30,9 +30,18 @@ public class ApprovalActivity extends AppCompatActivity {
     }
 
     public void onClickYes (View view) {
+        approveWebUser(true);
+    }
+
+    public void onClickNo (View view) {
+        approveWebUser(false);
+    }
+
+    private void approveWebUser(boolean approve) {
         URI adapterPath = URI.create("/adapters/LoginApprovalsAdapter/approve");
         WLResourceRequest resourceRequest = new WLResourceRequest(adapterPath, WLResourceRequest.POST);
         resourceRequest.setQueryParameter("clientId", clientId);
+        resourceRequest.setQueryParameter("approve", Boolean.toString(approve));
 
         resourceRequest.send(new WLResponseListener() {
             @Override

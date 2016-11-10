@@ -31,6 +31,7 @@ import static com.github.mfpdev.Constants.*;
 public class WebUserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
     static Logger logger = Logger.getLogger(WebUserLoginSecurityCheck.class.getName());
 
+    private transient boolean denied = false;
 
     private transient CloseableHttpClient httpclient = HttpClients.createDefault();
 
@@ -57,12 +58,16 @@ public class WebUserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
 
     protected boolean validateCredentials(Map<String, Object> credentials) {
         boolean approved = isApprovedWebClient();
+        if (!approved) {
+            denied = true;
+            userLoginSecurityCheck.logout();
+        }
         return approved;
     }
 
     protected Map<String, Object> createChallenge() {
         Map <String, Object> challenge = new HashMap<>();
-        if (!isApprovedWebClient()) {
+        if (!isApprovedWebClient() && !denied) {
             challenge.put(WAITING_FOR_APPROVAL_KEY, true);
 
             ClientSearchCriteria clientSearchCriteria = new ClientSearchCriteria().byAttribute(APPROVER_KEY, userLoginSecurityCheck.getUser().getId());
@@ -89,8 +94,10 @@ public class WebUserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
         return challenge;
     }
 
+
     private boolean isApprovedWebClient() {
-        return registrationContext.getRegisteredPublicAttributes().get(APPROVED_KEY) != null;
+        String approved = registrationContext.getRegisteredPublicAttributes().get(APPROVED_KEY);
+        return approved != null && approved.equals(APPROVED);
     }
 
     private String getMFServerURL() {
