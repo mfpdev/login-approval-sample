@@ -86,13 +86,13 @@ public class LoginApprovalsAdapterResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/approve")
 	@OAuthSecurity(scope = "appInstanceApprover")
-	public boolean approve(@QueryParam("uuid") String uuid) {
-		ClientSearchCriteria clientSearchCriteria = new ClientSearchCriteria().byAttribute(WEB_CLIENT_UUID, uuid);
+	public boolean approve(@QueryParam("clientId") String clientId) {
+		ClientSearchCriteria clientSearchCriteria = new ClientSearchCriteria().byAttribute(WEB_CLIENT_UUID, clientId);
 		List<ClientData> clientsData = securityContext.findClientRegistrationData(clientSearchCriteria);
 		if (clientsData.size() == 1) {
 			clientsData.get(0).getPublicAttributes().put(APPROVED_KEY, APPROVED);
 			securityContext.storeClientRegistrationData(clientsData.get(0));
-			return sendRefreshEvent(uuid);
+			return sendRefreshEvent(clientId);
 		}
 		return false;
 	}
@@ -118,9 +118,9 @@ public class LoginApprovalsAdapterResource {
 
 		String platformName = userAgent.getBrowser().getName() + " " + userAgent.getBrowserVersion().getVersion();
 		String os = userAgent.getOperatingSystem().getName();
+		String clientId = securityContext.getClientRegistrationData().getClientId();
 
-
-		WebClientData webClientData = new WebClientData(dateString, os, platformName, lat, lon, getLocationAddress(lat, lon));
+		WebClientData webClientData = new WebClientData(clientId, dateString, os, platformName, lat, lon, getLocationAddress(lat, lon));
 		securityContext.getClientRegistrationData().getProtectedAttributes().put(WEB_CLIENT_DATA, webClientData);
 		securityContext.getClientRegistrationData().getPublicAttributes().put(WEB_CLIENT_UUID, this.securityContext.getClientRegistrationData().getClientId());
 		securityContext.storeClientRegistrationData(securityContext.getClientRegistrationData());

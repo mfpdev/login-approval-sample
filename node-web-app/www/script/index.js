@@ -72,7 +72,7 @@ function getWebUser() {
         function (response) {
             showDiv("waitingForApproval", false);
             showDiv("content", true);
-            document.getElementById("helloUser") = "sss";
+            alert(JSON.stringify(response));
         },
         function (error) {
             alert(JSON.stringify(error));

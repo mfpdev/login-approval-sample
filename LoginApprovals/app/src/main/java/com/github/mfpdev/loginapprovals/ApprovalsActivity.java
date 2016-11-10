@@ -33,6 +33,11 @@ import java.net.URI;
 public class ApprovalsActivity extends AppCompatActivity {
 
     private static final Logger logger = Logger.getInstance(LoginActivity.class.getName());
+    public static final String DATE_EXTRA_KEY = "date";
+    public static final String LOCATION_EXTRA_KEY = "location";
+    public static final String PLATFORM_EXTRA_KEY = "platform";
+    public static final String OS_EXTRA_KEY = "os";
+    public static final String CLIENTID_EXTRA_KEY = "clientId";
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -55,7 +60,11 @@ public class ApprovalsActivity extends AppCompatActivity {
                 try {
                     JSONObject payload = new JSONObject(mfpSimplePushNotification.getPayload());
                     Intent intent = new Intent(WLClient.getInstance().getContext(), ApprovalActivity.class);
-                    intent.putExtra("date", (String)payload.get("date"));
+                    intent.putExtra(DATE_EXTRA_KEY, (String)payload.get("date"));
+                    intent.putExtra(LOCATION_EXTRA_KEY, (String)payload.get("address"));
+                    intent.putExtra(PLATFORM_EXTRA_KEY, (String)payload.get("platform"));
+                    intent.putExtra(OS_EXTRA_KEY, (String)payload.get("os"));
+                    intent.putExtra(CLIENTID_EXTRA_KEY, (String)payload.get("clientId"));
                     WLClient.getInstance().getContext().startActivity(intent);
                 } catch (JSONException e) {
                     logger.error("Failed to parse payload " + e.getMessage());

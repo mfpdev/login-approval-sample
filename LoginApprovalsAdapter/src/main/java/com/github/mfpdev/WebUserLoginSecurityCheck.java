@@ -32,7 +32,7 @@ public class WebUserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
     static Logger logger = Logger.getLogger(WebUserLoginSecurityCheck.class.getName());
 
 
-    private CloseableHttpClient httpclient = HttpClients.createDefault();
+    private transient CloseableHttpClient httpclient = HttpClients.createDefault();
 
     @SecurityCheckReference
     private transient UserLoginSecurityCheck userLoginSecurityCheck;
@@ -130,6 +130,7 @@ public class WebUserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
         payloadGCM.put("os", webClientData.getOs());
         payloadGCM.put("address", webClientData.getAddress());
         payloadGCM.put("date", webClientData.getDate());
+        payloadGCM.put("clientId", webClientData.getClientId());
 
         String payload = "{\n" +
                 "  \"message\": {\n" +

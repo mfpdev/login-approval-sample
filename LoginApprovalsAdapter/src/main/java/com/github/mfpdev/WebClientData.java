@@ -2,6 +2,7 @@ package com.github.mfpdev;
 
 
 public class WebClientData {
+    private String clientId;
     private String address;
     private double latitude;
     private double longitude;
@@ -12,7 +13,8 @@ public class WebClientData {
     public WebClientData () {
     }
 
-    public WebClientData(String date, String os, String platform, double latitude, double longitude, String locationDescription) {
+    public WebClientData(String clientId, String date, String os, String platform, double latitude, double longitude, String locationDescription) {
+        this.clientId = clientId;
         this.date = date;
         this.os = os;
         this.platform = platform;
@@ -67,5 +69,13 @@ public class WebClientData {
 
     public void setOs(String os) {
         this.os = os;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
     }
 }
