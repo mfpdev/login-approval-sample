@@ -20,7 +20,6 @@ import com.worklight.wlclient.api.WLResourceRequest;
 import com.worklight.wlclient.api.WLResponse;
 import com.worklight.wlclient.api.WLResponseListener;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -79,6 +78,21 @@ public class ApprovalsActivity extends AppCompatActivity {
         getApprovedClients();
     }
 
+    private ArrayList<ApprovedDevice> getApprovedDevicesList (JSONObject devicesJson) throws JSONException {
+        ArrayList<ApprovedDevice> approvedDevices = new ArrayList<>();
+        if (devicesJson.length() > 0) {
+            int i = 0;
+            Iterator<String> devicesIterator = devicesJson.keys();
+            while (devicesIterator.hasNext()) {
+                String id = devicesIterator.next();
+                JSONObject device = (JSONObject) devicesJson.get(id);
+                approvedDevices.add(new ApprovedDevice(id, device.getString("address"), device.getString("date"), device.getString("platform"), device.getString("os")));
+                i++;
+            }
+        }
+        return approvedDevices;
+    }
+
     protected void getApprovedClients() {
         URI adapterPath = URI.create("/adapters/LoginApprovalsAdapter/approvals");
         WLResourceRequest resourceRequest = new WLResourceRequest(adapterPath, WLResourceRequest.GET);
@@ -88,15 +102,9 @@ public class ApprovalsActivity extends AppCompatActivity {
             public void onSuccess(WLResponse wlResponse) {
                 try {
                     JSONObject devices = new JSONObject(wlResponse.getResponseJSON().toString());
-                    Iterator<String> devicesIterator = devices.keys();
-                    if (devices.length() > 0) {
-                        String [] listItems = new String[devices.length()];
-                        int i = 0;
-                        while (devicesIterator.hasNext()) {
-                            listItems[i] = devicesIterator.next();
-                            i++;
-                        }
-                        final ArrayAdapter adapter = new ArrayAdapter(ApprovalsActivity.this, android.R.layout.simple_list_item_1, listItems);
+                    ArrayList<ApprovedDevice> approvedDevices = getApprovedDevicesList (devices);
+                    if (approvedDevices.size() > 0) {
+                        final ApprovedDeviceAdapter adapter = new ApprovedDeviceAdapter(ApprovalsActivity.this, approvedDevices);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -104,9 +112,6 @@ public class ApprovalsActivity extends AppCompatActivity {
                             }
                         });
                     }
-
-
-
                 } catch (JSONException e) {
                     logger.error ("Cannot populate list of approved devices " + e.getMessage());
                 }
