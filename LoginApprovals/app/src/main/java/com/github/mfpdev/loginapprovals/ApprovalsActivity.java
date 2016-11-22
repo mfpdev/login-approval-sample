@@ -35,6 +35,8 @@ public class ApprovalsActivity extends AppCompatActivity {
     public static final String PLATFORM_EXTRA_KEY = "platform";
     public static final String OS_EXTRA_KEY = "os";
     public static final String CLIENTID_EXTRA_KEY = "clientId";
+
+    public static final int APPROVALS_ACTIVITY_CODE = 198;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -51,6 +53,18 @@ public class ApprovalsActivity extends AppCompatActivity {
 
         initWLSDK();
         approvalsListView = (ListView) findViewById(R.id.approvals_list_view);
+        getApprovedClients();
+    }
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == APPROVALS_ACTIVITY_CODE && resultCode == RESULT_OK) {
+            getApprovedClients();
+        } else {
+            // present an error
+        }
     }
 
     private void addPushListener() {
@@ -65,17 +79,13 @@ public class ApprovalsActivity extends AppCompatActivity {
                     intent.putExtra(PLATFORM_EXTRA_KEY, (String)payload.get("platform"));
                     intent.putExtra(OS_EXTRA_KEY, (String)payload.get("os"));
                     intent.putExtra(CLIENTID_EXTRA_KEY, (String)payload.get("clientId"));
-                    WLClient.getInstance().getContext().startActivity(intent);
+                    ApprovalsActivity.this.startActivityForResult(intent, APPROVALS_ACTIVITY_CODE);
                 } catch (JSONException e) {
                     logger.error("Failed to parse payload " + e.getMessage());
                 }
 
             }
         });
-    }
-
-    public void onButtonClicked(View view) {
-        getApprovedClients();
     }
 
     private ArrayList<ApprovedDevice> getApprovedDevicesList (JSONObject devicesJson) throws JSONException {

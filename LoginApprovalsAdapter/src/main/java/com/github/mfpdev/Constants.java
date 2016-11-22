@@ -10,6 +10,7 @@ public interface Constants {
     String APPROVED = "approved";
     String APPROVER_KEY = "approverKey";
     String WEB_CLIENT_DATA = "webClientData";
+    String USER_LOGIN_DONE = "userLoginDone";
     String WAITING_FOR_APPROVAL_KEY = "waitingForApproval";
     String USER_LOGIN_SC_NAME = "UserLogin";
     String ADDRESS_KEY = "address";

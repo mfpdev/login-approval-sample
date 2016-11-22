@@ -47,13 +47,14 @@ import static com.github.mfpdev.Constants.*;
 @Path("/")
 public class LoginApprovalsAdapterResource {
 	static Logger logger = Logger.getLogger(LoginApprovalsAdapterResource.class.getName());
-
 	// Inject the MFP configuration API:
 	@Context
 	ConfigurationAPI configApi;
 
 	@Context
 	AdapterSecurityContext securityContext;
+
+	static String WEB_NODE_SERVER_URL = "";
 
 	private CloseableHttpClient httpclient = HttpClients.createDefault();
 
@@ -99,11 +100,14 @@ public class LoginApprovalsAdapterResource {
 		ClientSearchCriteria clientSearchCriteria = new ClientSearchCriteria().byAttribute(WEB_CLIENT_UUID, clientId);
 		List<ClientData> clientsData = securityContext.findClientRegistrationData(clientSearchCriteria);
 		if (clientsData.size() == 1) {
+			ClientData clientData = clientsData.get(0);
 			if (approve) {
-				clientsData.get(0).getPublicAttributes().put(APPROVED_KEY, APPROVED);
-				securityContext.storeClientRegistrationData(clientsData.get(0));
+				clientData.getPublicAttributes().put(APPROVED_KEY, APPROVED);
+			} else {
+				clientData.getPublicAttributes().delete(APPROVED_KEY);
 			}
-			return sendRefreshEvent(clientId);
+			securityContext.storeClientRegistrationData(clientData);
+			return HttpSenderUtils.sendRefreshEvent(configApi.getPropertyValue(WEB_URL_FOR_NOTIFY), clientId);
 		}
 		return false;
 	}
@@ -169,25 +173,6 @@ public class LoginApprovalsAdapterResource {
 			return results.get(0).getFormattedAddress();
 		}
 		return latitude + ":" + latitude;
-	}
-
-	private boolean sendRefreshEvent(String uuid) {
-		boolean status = false;
-		String url = configApi.getPropertyValue(WEB_URL_FOR_NOTIFY);
-		url = url + "/refresh/" + uuid;
-		HttpGet httpGet = new HttpGet(url);
-		CloseableHttpResponse response = null;
-		try {
-			response = httpclient.execute(httpGet);
-			status = response.getStatusLine().getStatusCode() == HttpStatus.SC_OK;
-		} catch (IOException e) {
-			logger.info("Cannot send refresh event to " + url);
-		} finally {
-			if (response != null) {
-				HttpClientUtils.closeQuietly(response);
-			}
-		}
-		return status;
 	}
 
 	private void setAsApprover() {

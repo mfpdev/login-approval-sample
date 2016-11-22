@@ -15,6 +15,8 @@ import com.ibm.mfp.server.registration.external.model.AuthenticatedUser;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.github.mfpdev.Constants.USER_LOGIN_DONE;
+
 /**
  * Sample implementation of username/password security check that succeeds if username and password are identical.
  *
@@ -42,6 +44,7 @@ public class UserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
             if(username.equals(password)) {
                 userId = username;
                 displayName = username;
+                setDone(true);
                 return true;
             }
             else {
@@ -70,7 +73,17 @@ public class UserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
     }
 
     public boolean isDone() {
-        return this.registrationContext != null && this.registrationContext.getRegisteredUser() != null;
+        Boolean done = this.registrationContext.getRegisteredProtectedAttributes().get(USER_LOGIN_DONE);
+        return done != null && done;
+    }
+
+    public void setDone (boolean done) {
+        this.registrationContext.getRegisteredProtectedAttributes().put(USER_LOGIN_DONE, done);
+    }
+
+
+    public void setExpired() {
+        super.setState(STATE_EXPIRED);
     }
 
     public AuthenticatedUser getUser() {

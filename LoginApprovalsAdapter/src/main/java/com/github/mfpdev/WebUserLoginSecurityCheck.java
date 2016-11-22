@@ -60,7 +60,8 @@ public class WebUserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
         boolean approved = isApprovedWebClient();
         if (!approved) {
             denied = true;
-            userLoginSecurityCheck.logout();
+            userLoginSecurityCheck.setExpired();
+            userLoginSecurityCheck.setDone(false);
         }
         return approved;
     }
@@ -82,8 +83,8 @@ public class WebUserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
                 WebClientData webClientData = this.registrationContext.getRegisteredProtectedAttributes().get(WEB_CLIENT_DATA, WebClientData.class);
 
                 try {
-                    String token = getOAuthTokenForPush (appIdentifier);
-                    sendApprovalPushNotification (webClientData, appIdentifier, deviceId, userId, token);
+                    String token = HttpSenderUtils.getOAuthTokenForPush (getMFServerURL(),getConfidentialClientCredentials(),appIdentifier);
+                    HttpSenderUtils.sendApprovalPushNotification (getMFServerURL(), webClientData, appIdentifier, deviceId, userId, token);
                 } catch (IOException e) {
                     logger.info("Cannot send login approval push notification " + e.getMessage());
                 }

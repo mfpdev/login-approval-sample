@@ -53,7 +53,7 @@ public class ApprovedDeviceAdapter extends BaseAdapter {
 
         ApprovedDevice approvedDevice = (ApprovedDevice)getItem(position);
         firstLine.setText("Near " + approvedDevice.getAddress());
-        secondLine.setText("On " + approvedDevice.getDate() + "\n" + approvedDevice.getPlatform() + " for " + approvedDevice.getAddress());
+        secondLine.setText("On " + approvedDevice.getDate() + "\n" + approvedDevice.getPlatform() + " for " + approvedDevice.getOs());
         return rowView;
     }
 }

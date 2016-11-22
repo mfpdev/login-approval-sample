@@ -46,11 +46,14 @@ public class ApprovalActivity extends AppCompatActivity {
         resourceRequest.send(new WLResponseListener() {
             @Override
             public void onSuccess(WLResponse wlResponse) {
+                setResult(RESULT_OK);
                 ApprovalActivity.this.finish();
             }
 
             @Override
             public void onFailure(WLFailResponse wlFailResponse) {
+                setResult(RESULT_CANCELED);
+                ApprovalActivity.this.finish();
                 logger.error(wlFailResponse.getErrorMsg());
             }
         });
