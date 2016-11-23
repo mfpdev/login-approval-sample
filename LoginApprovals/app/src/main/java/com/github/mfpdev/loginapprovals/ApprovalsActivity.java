@@ -143,6 +143,7 @@ public class ApprovalsActivity extends AppCompatActivity {
 
         if (isSupported ) {
             initPushSDK();
+            addPushListener();
         } else {
             logger.warn("Push is not supported");
         }
@@ -152,7 +153,6 @@ public class ApprovalsActivity extends AppCompatActivity {
         MFPPush.getInstance().registerDevice(null, new MFPPushResponseListener<String>() {
             @Override
             public void onSuccess(String s) {
-                addPushListener();
                 logger.debug("Device registered to push service successfully");
             }
 
