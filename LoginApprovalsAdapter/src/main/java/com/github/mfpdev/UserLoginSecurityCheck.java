@@ -73,12 +73,12 @@ public class UserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
     }
 
     public boolean isDone() {
-        Boolean done = this.registrationContext.getRegisteredProtectedAttributes().get(USER_LOGIN_DONE);
+        Boolean done = this.registrationContext.getRegisteredPublicAttributes().get(USER_LOGIN_DONE);
         return done != null && done;
     }
 
     public void setDone (boolean done) {
-        this.registrationContext.getRegisteredProtectedAttributes().put(USER_LOGIN_DONE, done);
+        this.registrationContext.getRegisteredPublicAttributes().put(USER_LOGIN_DONE, done);
     }
 
 

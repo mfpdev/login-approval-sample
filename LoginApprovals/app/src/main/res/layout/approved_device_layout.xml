@@ -1,28 +1,37 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="?android:attr/listPreferredItemHeight"
-    android:padding="6dip" >
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:weightSum="1">
 
-    <TextView
-        android:id="@+id/secondLine"
-        android:layout_width="fill_parent"
-        android:layout_height="30dip"
-        android:layout_alignParentBottom="true"
-        android:ellipsize="marquee"
-        android:text="Description"
-        android:textSize="12sp" />
+    <Button
+        android:id="@+id/revokeButton"
+        android:layout_width="0dp"
+        android:layout_weight="0.3"
+        android:layout_marginRight="10dp"
+        android:layout_height="20dp"
+        android:layout_gravity="right|center_vertical"
+        android:background="@drawable/delete" />
 
-
-    <TextView
-        android:id="@+id/firstLine"
-        android:layout_width="fill_parent"
+    <LinearLayout android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@id/secondLine"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignWithParentIfMissing="true"
-        android:gravity="center_vertical"
-        android:text="Example application"
-        android:textSize="16sp" />
+        android:orientation="vertical">
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/firstLine"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="Example application"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/secondLine"
+            android:layout_width="fill_parent"
+            android:layout_height="30dip"
+            android:ellipsize="marquee"
+            android:text="Description"
+            android:textSize="10sp" />
+
+    </LinearLayout>
+</LinearLayout>

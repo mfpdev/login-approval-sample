@@ -5,6 +5,7 @@ import com.ibm.mfp.security.checks.base.UserAuthenticationSecurityCheck;
 import com.ibm.mfp.server.registration.external.model.AuthenticatedUser;
 import com.ibm.mfp.server.registration.external.model.ClientData;
 import com.ibm.mfp.server.security.external.checks.AuthorizationResponse;
+import com.ibm.mfp.server.security.external.checks.IntrospectionResponse;
 import com.ibm.mfp.server.security.external.checks.SecurityCheckReference;
 import com.ibm.mfp.server.security.external.resource.ClientSearchCriteria;
 import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
@@ -36,8 +37,6 @@ public class WebUserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
 
     @SecurityCheckReference
     private transient UserLoginSecurityCheck userLoginSecurityCheck;
-
-    private transient CloseableHttpClient httpclient = HttpClients.createDefault();
 
     @Override
     public WebUserLoginSecurityCheckConfiguration createConfiguration(Properties properties) {
@@ -84,7 +83,7 @@ public class WebUserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
 
                 try {
                     String token = HttpSenderUtils.getOAuthTokenForPush (getMFServerURL(),getConfidentialClientCredentials(),appIdentifier);
-                    HttpSenderUtils.sendApprovalPushNotification (getMFServerURL(), webClientData, appIdentifier, deviceId, userId, token);
+                    HttpSenderUtils.sendApprovalPushNotification(getMFServerURL(), webClientData, appIdentifier, deviceId, userId, token);
                 } catch (IOException e) {
                     logger.info("Cannot send login approval push notification " + e.getMessage());
                 }
@@ -95,6 +94,15 @@ public class WebUserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
         return challenge;
     }
 
+    @Override
+    public void introspect(Set<String> scope, IntrospectionResponse response) {
+        if (registrationContext.getRegisteredPublicAttributes().get(APPROVED_KEY) == null) {
+            userLoginSecurityCheck.setExpired();
+            setState(STATE_EXPIRED);
+        } else {
+            super.introspect(scope, response);
+        }
+    }
 
     private boolean isApprovedWebClient() {
         String approved = registrationContext.getRegisteredPublicAttributes().get(APPROVED_KEY);
@@ -109,64 +117,4 @@ public class WebUserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
         return ((WebUserLoginSecurityCheckConfiguration)this.config).getConfidentialClientCredentials();
     }
 
-    private String getOAuthTokenForPush (String appId) throws IOException {
-        String token = null;
-        String url = getMFServerURL() + "/mfp/api/az/v1/token";
-        HttpPost httpPost = new HttpPost(url);
-
-        Header authorizationHeader = new BasicHeader("Authorization", "Basic " + Base64.encode(getConfidentialClientCredentials().getBytes()));
-        httpPost.setHeader(authorizationHeader);
-
-        List<NameValuePair> params = new ArrayList<>(2);
-        params.add(new BasicNameValuePair("grant_type", "client_credentials"));
-        params.add(new BasicNameValuePair("scope", "messages.write and push.application." + appId));
-        httpPost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
-
-        CloseableHttpResponse response = httpclient.execute(httpPost);
-        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-            JSONObject tokenInfo = JSONObject.parse(response.getEntity().getContent());
-            token = (String) tokenInfo.get("access_token");
-        }
-        HttpClientUtils.closeQuietly(response);
-        return token;
-    }
-
-    private int sendApprovalPushNotification (WebClientData webClientData, String appIdentifier, String deviceId, String userId, String accessToken) throws IOException {
-        String url = getMFServerURL() + "/imfpush/v1/apps/" + appIdentifier + "/messages";
-        HttpPost httpPost = new HttpPost(url);
-
-        JSONObject payloadGCM = new JSONObject();
-        payloadGCM.put(PLATFORM_KEY, webClientData.getPlatform());
-        payloadGCM.put(OS_KEY, webClientData.getOs());
-        payloadGCM.put(ADDRESS_KEY, webClientData.getAddress());
-        payloadGCM.put(DATE_KEY, webClientData.getDate());
-        payloadGCM.put(CLIENT_ID_KEY, webClientData.getClientId());
-
-        String payload = "{\n" +
-                "  \"message\": {\n" +
-                "    \"alert\": \"Did you just login near " + webClientData.getAddress() + "?\"\n" +
-                "  },\n" +
-                "  \"settings\": {\n" +
-                "   \"gcm\": {\n" +
-                "       \"payload\":"  + payloadGCM.toString() + "\n" +
-                "   },\n" +
-                "  },\n" +
-                "  \"notificationType\":1,\n" +
-                "   \"target\" : {\n" +
-                "     \"platforms\" : [\"G\"],\n" +
-                "     \"deviceIds\" : [\""+ deviceId+ "\"],\n" +
-                "     \"userIds\" : [\""+ userId+ "\"]\n" +
-                "   }\n" +
-                "}";
-        HttpEntity entity = new StringEntity(payload);
-        Header contentTypeHeader = new BasicHeader("Content-Type", "application/json");
-        Header authorizationHeader = new BasicHeader("Authorization", "Bearer " + accessToken);
-        httpPost.setHeader(authorizationHeader);
-        httpPost.setHeader(contentTypeHeader);
-        httpPost.setEntity(entity);
-        CloseableHttpResponse response = httpclient.execute(httpPost);
-        int status = response.getStatusLine().getStatusCode();
-        HttpClientUtils.closeQuietly(response);
-        return status;
-    }
 }

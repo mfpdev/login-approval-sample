@@ -51,10 +51,11 @@ io.on('connection', function (socket) {
 });
 
 //Notifying client to refresh
-app.get('/refresh/:uuid', function (req, res) {
+app.get('/refresh/:uuid/:event', function (req, res) {
   var uuid = req.params.uuid;
+  var event = req.params.event;
   console.log('Get refresh event from uuid ' + uuid);
-  io.sockets.emit(uuid, { 'refresh': true });
+  io.sockets.emit(uuid, { 'refresh': true, 'event' : event});
   res.statusCode = 200;
   return res.send('Sent refresh event to client id ' + uuid);
 });

@@ -34,9 +34,9 @@ public class HttpSenderUtils {
 
     static Logger logger = Logger.getLogger(LoginApprovalsAdapterResource.class.getName());
 
-     static boolean sendRefreshEvent(String nodeServerURL, String uuid) {
+     static boolean sendRefreshEvent(String nodeServerURL, String uuid, String event) {
          boolean status = false;
-         nodeServerURL = nodeServerURL + "/refresh/" + uuid;
+         nodeServerURL = nodeServerURL + "/refresh/" + uuid + "/" + event;
          HttpGet httpGet = new HttpGet(nodeServerURL);
          CloseableHttpResponse response = null;
          try {

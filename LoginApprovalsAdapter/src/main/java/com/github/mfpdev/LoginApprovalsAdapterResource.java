@@ -46,6 +46,8 @@ import static com.github.mfpdev.Constants.*;
 @Api(value = "Login Approvals Adapter Resource")
 @Path("/")
 public class LoginApprovalsAdapterResource {
+	public static final String REVOKE_EVENT = "revoke";
+	public static final String APPROVE_EVENT = "approve";
 	static Logger logger = Logger.getLogger(LoginApprovalsAdapterResource.class.getName());
 	// Inject the MFP configuration API:
 	@Context
@@ -54,9 +56,7 @@ public class LoginApprovalsAdapterResource {
 	@Context
 	AdapterSecurityContext securityContext;
 
-	static String WEB_NODE_SERVER_URL = "";
-
-	private CloseableHttpClient httpclient = HttpClients.createDefault();
+	private static int EARTH_RADIUS = 6371; // Radius of the earth in km
 
 	@ApiOperation(value = "Get approved web instances", notes = "Return all the approved app instances")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "A JSON object containing all the approved app instances.") })
@@ -92,22 +92,24 @@ public class LoginApprovalsAdapterResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/approve")
 	@OAuthSecurity(scope = "appInstanceApprover")
-	public boolean approve(@QueryParam("clientId") String clientId, @QueryParam("approve") Boolean approve) {
-		return approveClient(clientId, approve);
-	}
-
-	private boolean approveClient(String clientId, boolean approve) {
+	public boolean approve(@QueryParam("clientId") String clientId, @QueryParam("approve") Boolean approve, @QueryParam("longitude") Double longitude, @QueryParam("latitude") Double latitude) {
 		ClientSearchCriteria clientSearchCriteria = new ClientSearchCriteria().byAttribute(WEB_CLIENT_UUID, clientId);
 		List<ClientData> clientsData = securityContext.findClientRegistrationData(clientSearchCriteria);
+
 		if (clientsData.size() == 1) {
 			ClientData clientData = clientsData.get(0);
+			String event = REVOKE_EVENT;
+
 			if (approve) {
 				clientData.getPublicAttributes().put(APPROVED_KEY, APPROVED);
+				event = APPROVE_EVENT;
 			} else {
+				//clientData.getPublicAttributes().delete(USER_LOGIN_DONE);
+				clientData.getProtectedAttributes().delete(WEB_CLIENT_UUID);
 				clientData.getPublicAttributes().delete(APPROVED_KEY);
 			}
 			securityContext.storeClientRegistrationData(clientData);
-			return HttpSenderUtils.sendRefreshEvent(configApi.getPropertyValue(WEB_URL_FOR_NOTIFY), clientId);
+			return HttpSenderUtils.sendRefreshEvent(configApi.getPropertyValue(WEB_URL_FOR_NOTIFY), clientId, event);
 		}
 		return false;
 	}

@@ -42,7 +42,6 @@ function sendWebData(callback) {
         console.log("Getting client location");
         if (position.coords) {
             console.log("Success getting client location");
-            resourceRequest.setQueryParameter("locationDescription", location);
             resourceRequest.setQueryParameter("latitude", position.coords.latitude);
             resourceRequest.setQueryParameter("longitude", position.coords.longitude);
             resourceRequest.send().then(
@@ -54,8 +53,16 @@ function sendWebData(callback) {
                     //Start listen to socket
                     socket.on(clientId, function (data) {
                         if (data.refresh) {
-                            webUserLoginChallengeHandler.submitChallengeAnswer({})
-                        }
+                            switch (data.event) {
+                                case "approve":
+                                    webUserLoginChallengeHandler.submitChallengeAnswer({});
+                                    break;
+                                case "revoke":
+                                    webUserLoginChallengeHandler.cancel();
+                                    location.reload();
+                                    break;
+                            }  
+                        } 
                     });
                 },
                 function (error) {

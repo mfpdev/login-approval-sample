@@ -1,10 +1,10 @@
 package com.github.mfpdev.loginapprovals;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -27,7 +27,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class ApprovalsActivity extends AppCompatActivity {
+public class ApprovalsActivity extends AppCompatActivity implements MFPPushNotificationListener {
 
     private static final Logger logger = Logger.getInstance(LoginActivity.class.getName());
     public static final String DATE_EXTRA_KEY = "date";
@@ -52,11 +52,10 @@ public class ApprovalsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initWLSDK();
+        MFPPush.getInstance().listen(this);
         approvalsListView = (ListView) findViewById(R.id.approvals_list_view);
         getApprovedClients();
     }
-
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -67,25 +66,20 @@ public class ApprovalsActivity extends AppCompatActivity {
         }
     }
 
-    private void addPushListener() {
-        MFPPush.getInstance().listen(new MFPPushNotificationListener() {
-            @Override
-            public void onReceive(MFPSimplePushNotification mfpSimplePushNotification) {
-                try {
-                    JSONObject payload = new JSONObject(mfpSimplePushNotification.getPayload());
-                    Intent intent = new Intent(WLClient.getInstance().getContext(), ApprovalActivity.class);
-                    intent.putExtra(DATE_EXTRA_KEY, (String)payload.get("date"));
-                    intent.putExtra(LOCATION_EXTRA_KEY, (String)payload.get("address"));
-                    intent.putExtra(PLATFORM_EXTRA_KEY, (String)payload.get("platform"));
-                    intent.putExtra(OS_EXTRA_KEY, (String)payload.get("os"));
-                    intent.putExtra(CLIENTID_EXTRA_KEY, (String)payload.get("clientId"));
-                    ApprovalsActivity.this.startActivityForResult(intent, APPROVALS_ACTIVITY_CODE);
-                } catch (JSONException e) {
-                    logger.error("Failed to parse payload " + e.getMessage());
-                }
-
-            }
-        });
+    @Override
+    public void onReceive(MFPSimplePushNotification mfpSimplePushNotification) {
+        try {
+            JSONObject payload = new JSONObject(mfpSimplePushNotification.getPayload());
+            Intent intent = new Intent(WLClient.getInstance().getContext(), ApprovalActivity.class);
+            intent.putExtra(DATE_EXTRA_KEY, (String)payload.get("date"));
+            intent.putExtra(LOCATION_EXTRA_KEY, (String)payload.get("address"));
+            intent.putExtra(PLATFORM_EXTRA_KEY, (String)payload.get("platform"));
+            intent.putExtra(OS_EXTRA_KEY, (String)payload.get("os"));
+            intent.putExtra(CLIENTID_EXTRA_KEY, (String)payload.get("clientId"));
+            ApprovalsActivity.this.startActivityForResult(intent, APPROVALS_ACTIVITY_CODE);
+        } catch (JSONException e) {
+            logger.error("Failed to parse payload " + e.getMessage());
+        }
     }
 
     private ArrayList<ApprovedDevice> getApprovedDevicesList (JSONObject devicesJson) throws JSONException {
@@ -136,14 +130,11 @@ public class ApprovalsActivity extends AppCompatActivity {
     }
 
     private void initWLSDK() {
-        WLClient.createInstance(this);
         WLClient.getInstance().registerChallengeHandler(new UserLoginChallengeHandler());
-        MFPPush.getInstance().initialize(this);
         Boolean isSupported = MFPPush.getInstance().isPushSupported();
 
         if (isSupported ) {
             initPushSDK();
-            addPushListener();
         } else {
             logger.warn("Push is not supported");
         }
