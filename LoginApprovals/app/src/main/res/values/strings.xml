@@ -5,6 +5,7 @@
     <string name="title_activity_approval">ApprovalActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="refresh">refresh</string>
 
 
 </resources>

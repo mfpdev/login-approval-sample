@@ -17,8 +17,6 @@ import com.worklight.wlclient.api.WLResponseListener;
 import java.net.URI;
 import java.util.ArrayList;
 
-import static com.squareup.okhttp.internal.Internal.logger;
-
 /**
  * Created by ishaib on 11/11/2016.
  */

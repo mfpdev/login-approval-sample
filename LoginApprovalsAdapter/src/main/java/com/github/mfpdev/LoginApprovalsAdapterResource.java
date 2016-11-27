@@ -104,7 +104,7 @@ public class LoginApprovalsAdapterResource {
 				clientData.getPublicAttributes().put(APPROVED_KEY, APPROVED);
 				event = APPROVE_EVENT;
 			} else {
-				//clientData.getPublicAttributes().delete(USER_LOGIN_DONE);
+				clientData.getPublicAttributes().delete(USER_LOGIN_DONE);
 				clientData.getProtectedAttributes().delete(WEB_CLIENT_UUID);
 				clientData.getPublicAttributes().delete(APPROVED_KEY);
 			}
@@ -137,11 +137,13 @@ public class LoginApprovalsAdapterResource {
 		String os = userAgent.getOperatingSystem().getName();
 		String clientId = securityContext.getClientRegistrationData().getClientId();
 
-		WebClientData webClientData = new WebClientData(clientId, dateString, os, platformName, lat, lon, getLocationAddress(lat, lon));
-		securityContext.getClientRegistrationData().getProtectedAttributes().put(WEB_CLIENT_DATA, webClientData);
-		securityContext.getClientRegistrationData().getPublicAttributes().put(WEB_CLIENT_UUID, this.securityContext.getClientRegistrationData().getClientId());
-		securityContext.storeClientRegistrationData(securityContext.getClientRegistrationData());
-
+		WebClientData webClientData = securityContext.getClientRegistrationData().getProtectedAttributes().get(WEB_CLIENT_DATA, WebClientData.class);
+		if (webClientData == null) {
+			webClientData = new WebClientData(clientId, dateString, os, platformName, lat, lon, getLocationAddress(lat, lon));
+			securityContext.getClientRegistrationData().getProtectedAttributes().put(WEB_CLIENT_DATA, webClientData);
+			securityContext.getClientRegistrationData().getPublicAttributes().put(WEB_CLIENT_UUID, this.securityContext.getClientRegistrationData().getClientId());
+			securityContext.storeClientRegistrationData(securityContext.getClientRegistrationData());
+		}
 
 		Map<String, String> result = new HashMap<>();
 		result.put("clientId", securityContext.getClientRegistrationData().getClientId());

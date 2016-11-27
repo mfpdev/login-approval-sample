@@ -1,6 +1,7 @@
 package com.github.mfpdev.loginapprovals;
 
 import android.content.Intent;
+
 import com.worklight.common.Logger;
 import com.worklight.wlclient.api.WLClient;
 import com.worklight.wlclient.api.challengehandler.SecurityCheckChallengeHandler;
