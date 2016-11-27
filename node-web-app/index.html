@@ -27,31 +27,38 @@
 	<script type="text/javascript" src="node_modules/ibm-mfp-web-sdk/ibmmfpf.js"></script>
 	<script type="text/javascript" src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 	<script type="text/javascript" src="www/script/index.js"></script>
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
 
 <body>
-  <!-- Hello approved user -->
+	<!-- Hello approved user -->
 	<div id="content">
-    <span id="helloApprovedUser"></span>
-	</div>
-	
-  <!-- Login screen -->
-  <div id="login">
-		<div class="container">
-			<label><b>Username</b></label>
-			<input type="text" placeholder="Enter Username" id="username" required>
-			<label><b>Password</b></label>
-			<input type="password" placeholder="Enter Password" id="password" required>
-			<button onclick="onLoginClicked()">Login</button>
+		<div class="wrapper">
+			<h1 id="helloApprovedUser" class="form-signin-heading"></h1>
 		</div>
 	</div>
 
-  <!-- Waiting for approval -->
-  <div id="waitingForApproval">
+	<!-- Login screen -->
+	<div id="login">
 		<div class="container">
-			<label><b>Waiting for approval ...</b></label>
+			<div class="wrapper">
+					<h3 class="form-signin-heading">Please Sign In</h3>
+					<input type="text" class="form-control" id="username" placeholder="Username" required="" autofocus="" />
+					<input type="password" class="form-control" id="password" placeholder="Password" required="" />
+					<button class="btn btn-lg btn-primary btn-block" name="Submit" onclick="onLoginClicked()" value="Login" >Login</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Waiting for approval -->
+	<div id="waitingForApproval">
+		<div class="container">
+			<div class="wrapper">
+				<h1 class="form-signin-heading">Waiting for approval ...</label>
+			</div>
 		</div>
 	</div>
 	</div>
 </body>
+
 </html>

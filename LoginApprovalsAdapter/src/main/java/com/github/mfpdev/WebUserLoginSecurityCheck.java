@@ -1,6 +1,5 @@
 package com.github.mfpdev;
 
-import com.ibm.json.java.JSONObject;
 import com.ibm.mfp.security.checks.base.UserAuthenticationSecurityCheck;
 import com.ibm.mfp.server.registration.external.model.AuthenticatedUser;
 import com.ibm.mfp.server.registration.external.model.ClientData;
@@ -8,20 +7,6 @@ import com.ibm.mfp.server.security.external.checks.AuthorizationResponse;
 import com.ibm.mfp.server.security.external.checks.IntrospectionResponse;
 import com.ibm.mfp.server.security.external.checks.SecurityCheckReference;
 import com.ibm.mfp.server.security.external.resource.ClientSearchCriteria;
-import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.HttpClientUtils;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.message.BasicNameValuePair;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -34,6 +19,7 @@ public class WebUserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
     static Logger logger = Logger.getLogger(WebUserLoginSecurityCheck.class.getName());
 
     private transient boolean denied = false;
+    private transient boolean isPushSent = false;
 
     @SecurityCheckReference
     private transient UserLoginSecurityCheck userLoginSecurityCheck;
@@ -82,8 +68,11 @@ public class WebUserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
                 WebClientData webClientData = this.registrationContext.getRegisteredProtectedAttributes().get(WEB_CLIENT_DATA, WebClientData.class);
 
                 try {
-                    String token = HttpSenderUtils.getOAuthTokenForPush (getMFServerURL(),getConfidentialClientCredentials(),appIdentifier);
-                    HttpSenderUtils.sendApprovalPushNotification(getMFServerURL(), webClientData, appIdentifier, deviceId, userId, token);
+                    if(!isPushSent) {
+                        String token = HttpSenderUtils.getOAuthTokenForPush(getMFServerURL(), getConfidentialClientCredentials(), appIdentifier);
+                        HttpSenderUtils.sendApprovalPushNotification(getMFServerURL(), webClientData, appIdentifier, deviceId, userId, token);
+                        isPushSent = true;
+                    }
                 } catch (IOException e) {
                     logger.info("Cannot send login approval push notification " + e.getMessage());
                 }

@@ -59,7 +59,9 @@ function sendWebData(callback) {
                                     break;
                                 case "revoke":
                                     webUserLoginChallengeHandler.cancel();
-                                    location.reload();
+                                    setTimeout(function () {
+                                        location.reload();
+                                    }, 500);
                                     break;
                             }  
                         } 

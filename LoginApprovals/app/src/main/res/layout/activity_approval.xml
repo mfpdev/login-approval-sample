@@ -11,14 +11,6 @@
     tools:context="com.github.mfpdev.loginapprovals.ApprovalActivity">
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="49dp"
-        android:id="@+id/locationLabel"
-        android:layout_below="@+id/dateLabel"
-        android:layout_alignParentStart="true" />
-
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="67dp"
@@ -72,6 +64,14 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
         android:onClick="onClickNo" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="75dp"
+        android:id="@+id/locationLabel"
+        android:layout_below="@+id/dateLabel"
+        android:layout_alignParentStart="true" />
 
 
 </RelativeLayout>
