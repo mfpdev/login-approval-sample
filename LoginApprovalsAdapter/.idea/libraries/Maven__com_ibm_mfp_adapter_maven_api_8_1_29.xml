@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.ibm.mfp:adapter-maven-api:8.1.29">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/ibm/mfp/adapter-maven-api/8.1.29/adapter-maven-api-8.1.29.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/ibm/mfp/adapter-maven-api/8.1.29/adapter-maven-api-8.1.29-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/ibm/mfp/adapter-maven-api/8.1.29/adapter-maven-api-8.1.29-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

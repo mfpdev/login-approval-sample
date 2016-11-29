@@ -1,3 +1,19 @@
+/**
+ *    © Copyright 2016 IBM Corp.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package com.github.mfpdev.loginapprovals;
 
 import android.content.Intent;
@@ -46,6 +62,8 @@ public class ApprovalsActivity extends AppCompatActivity implements MFPPushNotif
 
     private ListView approvalsListView;
 
+    private boolean isInApprovalProcess = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,26 +98,28 @@ public class ApprovalsActivity extends AppCompatActivity implements MFPPushNotif
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == APPROVALS_ACTIVITY_CODE && resultCode == RESULT_OK) {
+        //if (requestCode == APPROVALS_ACTIVITY_CODE && resultCode == RESULT_OK) {
             getApprovedClients();
-        } else {
-            // present an error
-        }
+            isInApprovalProcess = false;
+        //}
     }
 
     @Override
     public void onReceive(MFPSimplePushNotification mfpSimplePushNotification) {
-        try {
-            JSONObject payload = new JSONObject(mfpSimplePushNotification.getPayload());
-            Intent intent = new Intent(WLClient.getInstance().getContext(), ApprovalActivity.class);
-            intent.putExtra(DATE_EXTRA_KEY, (String)payload.get("date"));
-            intent.putExtra(LOCATION_EXTRA_KEY, (String)payload.get("address"));
-            intent.putExtra(PLATFORM_EXTRA_KEY, (String)payload.get("platform"));
-            intent.putExtra(OS_EXTRA_KEY, (String)payload.get("os"));
-            intent.putExtra(CLIENTID_EXTRA_KEY, (String)payload.get("clientId"));
-            ApprovalsActivity.this.startActivityForResult(intent, APPROVALS_ACTIVITY_CODE);
-        } catch (JSONException e) {
-            logger.error("Failed to parse payload " + e.getMessage());
+        if (!isInApprovalProcess) {
+            try {
+                JSONObject payload = new JSONObject(mfpSimplePushNotification.getPayload());
+                Intent intent = new Intent(WLClient.getInstance().getContext(), ApprovalActivity.class);
+                intent.putExtra(DATE_EXTRA_KEY, (String) payload.get("date"));
+                intent.putExtra(LOCATION_EXTRA_KEY, (String) payload.get("address"));
+                intent.putExtra(PLATFORM_EXTRA_KEY, (String) payload.get("platform"));
+                intent.putExtra(OS_EXTRA_KEY, (String) payload.get("os"));
+                intent.putExtra(CLIENTID_EXTRA_KEY, (String) payload.get("clientId"));
+                ApprovalsActivity.this.startActivityForResult(intent, APPROVALS_ACTIVITY_CODE);
+                isInApprovalProcess = true;
+            } catch (JSONException e) {
+                logger.error("Failed to parse payload " + e.getMessage());
+            }
         }
     }
 

@@ -1,8 +1,17 @@
-/*
- *    Licensed Materials - Property of IBM
- *    5725-I43 (C) Copyright IBM Corp. 2015, 2016. All Rights Reserved.
- *    US Government Users Restricted Rights - Use, duplication or
- *    disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+/**
+ *    © Copyright 2016 IBM Corp.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
  */
 
 package com.github.mfpdev;
@@ -24,17 +33,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.HttpClientUtils;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
@@ -72,13 +74,13 @@ public class LoginApprovalsAdapterResource {
 
 		Map<String, Map<String,String>> allClients = new HashMap<>();
 		for (ClientData data : clientsData) {
-			WebClientData webClientData = data.getProtectedAttributes().get("webClientData", WebClientData.class);
+			WebClientData webClientData = data.getPublicAttributes().get("webClientData", WebClientData.class);
+
 			Map<String, String> clientData = new HashMap<>();
 			clientData.put(ADDRESS_KEY, webClientData.getAddress());
 			clientData.put(DATE_KEY, webClientData.getDate());
 			clientData.put(PLATFORM_KEY, webClientData.getPlatform());
 			clientData.put(OS_KEY, webClientData.getOs());
-
 
 			allClients.put(webClientData.getClientId(), clientData);
 		}
@@ -105,7 +107,7 @@ public class LoginApprovalsAdapterResource {
 				event = APPROVE_EVENT;
 			} else {
 				clientData.getPublicAttributes().delete(USER_LOGIN_DONE);
-				clientData.getProtectedAttributes().delete(WEB_CLIENT_UUID);
+				//clientData.getPublicAttributes().delete(WEB_CLIENT_UUID);
 				clientData.getPublicAttributes().delete(APPROVED_KEY);
 			}
 			securityContext.storeClientRegistrationData(clientData);
@@ -129,27 +131,28 @@ public class LoginApprovalsAdapterResource {
 		double lat = Double.valueOf(latitude);
 		double lon = Double.valueOf(longitude);
 
-		String platform = securityContext.getClientRegistrationData().getRegistration().getDevice().getPlatform();
+		final ClientData clientRegistrationData = securityContext.getClientRegistrationData();
+		String platform = clientRegistrationData.getRegistration().getDevice().getPlatform();
 
 		UserAgent userAgent = UserAgent.parseUserAgentString(platform);
 
 		String platformName = userAgent.getBrowser().getName() + " " + userAgent.getBrowserVersion().getVersion();
 		String os = userAgent.getOperatingSystem().getName();
-		String clientId = securityContext.getClientRegistrationData().getClientId();
+		String clientId = clientRegistrationData.getClientId();
 
-		WebClientData webClientData = securityContext.getClientRegistrationData().getProtectedAttributes().get(WEB_CLIENT_DATA, WebClientData.class);
+		WebClientData webClientData = clientRegistrationData.getPublicAttributes().get(WEB_CLIENT_DATA, WebClientData.class);
 		if (webClientData == null) {
+			String webClientID = this.securityContext.getClientRegistrationData().getClientId();
 			webClientData = new WebClientData(clientId, dateString, os, platformName, lat, lon, getLocationAddress(lat, lon));
-			securityContext.getClientRegistrationData().getProtectedAttributes().put(WEB_CLIENT_DATA, webClientData);
-			securityContext.getClientRegistrationData().getPublicAttributes().put(WEB_CLIENT_UUID, this.securityContext.getClientRegistrationData().getClientId());
-			securityContext.storeClientRegistrationData(securityContext.getClientRegistrationData());
+			clientRegistrationData.getPublicAttributes().put(WEB_CLIENT_DATA, webClientData);
+			clientRegistrationData.getPublicAttributes().put(WEB_CLIENT_UUID, webClientID);
+			securityContext.storeClientRegistrationData(clientRegistrationData);
 		}
 
 		Map<String, String> result = new HashMap<>();
-		result.put("clientId", securityContext.getClientRegistrationData().getClientId());
+		result.put("clientId", clientRegistrationData.getClientId());
 		return result;
 	}
-
 
 	@Path("/user")
 	@GET
