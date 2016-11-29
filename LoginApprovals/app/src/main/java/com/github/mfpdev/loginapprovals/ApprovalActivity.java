@@ -87,7 +87,7 @@ public class ApprovalActivity extends AppCompatActivity {
         TextView locationText = (TextView) findViewById(R.id.locationLabel);
         TextView platformText = (TextView) findViewById(R.id.platformLabel);
 
-        location = "near " + location;
+        location = "Near " + location;
         String platformAndOS = platform + " for " + os;
 
         dateText.setText(date);
