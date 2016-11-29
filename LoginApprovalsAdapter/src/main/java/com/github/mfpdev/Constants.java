@@ -20,7 +20,7 @@ package com.github.mfpdev;
  */
 public interface Constants {
     String WEB_CLIENT_UUID = "webClientUUID";
-    String WEB_URL_FOR_NOTIFY = "webURLForNotify";
+    String NODE_SERVER_URL = "nodeServerURL";
     String APPROVED_KEY = "approvedKey";
     String APPROVED = "approved";
     String APPROVER_KEY = "approverKey";

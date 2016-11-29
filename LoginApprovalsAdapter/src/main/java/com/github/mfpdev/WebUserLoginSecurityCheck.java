@@ -16,7 +16,6 @@
 
 package com.github.mfpdev;
 
-import com.ibm.json.java.JSONObject;
 import com.ibm.mfp.security.checks.base.UserAuthenticationSecurityCheck;
 import com.ibm.mfp.server.registration.external.model.AuthenticatedUser;
 import com.ibm.mfp.server.registration.external.model.ClientData;

@@ -58,8 +58,6 @@ public class LoginApprovalsAdapterResource {
 	@Context
 	AdapterSecurityContext securityContext;
 
-	private static int EARTH_RADIUS = 6371; // Radius of the earth in km
-
 	@ApiOperation(value = "Get approved web instances", notes = "Return all the approved app instances")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "A JSON object containing all the approved app instances.") })
 	@GET
@@ -73,16 +71,17 @@ public class LoginApprovalsAdapterResource {
 		List<ClientData> clientsData = securityContext.findClientRegistrationData(clientSearchCriteria);
 
 		Map<String, Map<String,String>> allClients = new HashMap<>();
-		for (ClientData data : clientsData) {
-			WebClientData webClientData = data.getPublicAttributes().get("webClientData", WebClientData.class);
+		for (ClientData clientData : clientsData) {
 
-			Map<String, String> clientData = new HashMap<>();
-			clientData.put(ADDRESS_KEY, webClientData.getAddress());
-			clientData.put(DATE_KEY, webClientData.getDate());
-			clientData.put(PLATFORM_KEY, webClientData.getPlatform());
-			clientData.put(OS_KEY, webClientData.getOs());
+			WebClientData webClientData = clientData.getPublicAttributes().get("webClientData", WebClientData.class);
 
-			allClients.put(webClientData.getClientId(), clientData);
+			Map<String, String> clientDataMap = new HashMap<>();
+			clientDataMap.put(ADDRESS_KEY, webClientData.getAddress());
+			clientDataMap.put(DATE_KEY, webClientData.getDate());
+			clientDataMap.put(PLATFORM_KEY, webClientData.getPlatform());
+			clientDataMap.put(OS_KEY, webClientData.getOs());
+
+			allClients.put(webClientData.getClientId(), clientDataMap);
 		}
 
 		return allClients;
@@ -111,7 +110,7 @@ public class LoginApprovalsAdapterResource {
 				clientData.getPublicAttributes().delete(APPROVED_KEY);
 			}
 			securityContext.storeClientRegistrationData(clientData);
-			return HttpSenderUtils.sendRefreshEvent(configApi.getPropertyValue(WEB_URL_FOR_NOTIFY), clientId, event);
+			return HttpSenderUtils.sendRefreshEvent(configApi.getPropertyValue(NODE_SERVER_URL), clientId, event);
 		}
 		return false;
 	}
