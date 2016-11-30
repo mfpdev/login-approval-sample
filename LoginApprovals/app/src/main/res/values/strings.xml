@@ -6,7 +6,9 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="refresh">refresh</string>
-    <string name="did_you_just_log_in">Did you just log in?</string>
-
+    <string name="did_you_just_log_in">Did you just log in from a new browser?</string>
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
+    <string name="logoutMessage">Are you sure you want to logout from this browser?</string>
 
 </resources>

@@ -170,6 +170,12 @@ public class LoginApprovalsAdapterResource {
 		return securityContext.getAuthenticatedUser();
 	}
 
+	/**
+	 * Get address name from coordinates
+	 * @param latitude
+	 * @param longitude
+	 * @return
+	 */
 	private String getLocationAddress (double latitude, double longitude) {
 		final Geocoder geocoder = new Geocoder();
 		GeocoderRequest geocoderRequest = new GeocoderRequestBuilder().setLocation(new LatLng(BigDecimal.valueOf(latitude),BigDecimal.valueOf(longitude))).getGeocoderRequest();
@@ -181,6 +187,9 @@ public class LoginApprovalsAdapterResource {
 		return latitude + ":" + latitude;
 	}
 
+	/**
+	 * Set client as aprrover
+	 */
 	private void setAsApprover() {
 		ClientData clientData = securityContext.getClientRegistrationData();
 		clientData.getPublicAttributes().put(APPROVER_KEY, securityContext.getAuthenticatedUser().getId());

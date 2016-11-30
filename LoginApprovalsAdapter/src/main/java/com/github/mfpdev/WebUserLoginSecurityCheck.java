@@ -86,7 +86,7 @@ public class WebUserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
                 WebClientData webClientData = this.registrationContext.getRegisteredPublicAttributes().get(WEB_CLIENT_DATA, WebClientData.class);
 
                 try {
-                    String token = HttpSenderUtils.getOAuthTokenForPush(getMFServerURL(), getConfidentialClientCredentials(), appIdentifier);
+                    String token = HttpSenderUtils.fetchOAuthTokenForPush(getMFServerURL(), getConfidentialClientCredentials(), appIdentifier);
                     HttpSenderUtils.sendApprovalPushNotification(getMFServerURL(), webClientData, appIdentifier, deviceId, userId, token);
                 } catch (IOException e) {
                     logger.info("Cannot send login approval push notification " + e.getMessage());
@@ -107,10 +107,7 @@ public class WebUserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
             super.introspect(scope, response);
         }
     }
-
-    private void setApproved () {
-
-    }
+    
     private boolean isApprovedWebClient() {
         String approved = registrationContext.getRegisteredPublicAttributes().get(APPROVED_KEY);
         return approved != null && approved.equals(APPROVED);

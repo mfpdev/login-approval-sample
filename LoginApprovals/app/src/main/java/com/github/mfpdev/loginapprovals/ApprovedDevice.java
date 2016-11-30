@@ -19,14 +19,14 @@ package com.github.mfpdev.loginapprovals;
 /**
  * Created by ishaib on 11/11/2016.
  */
-public class ApprovedDevice {
+class ApprovedDevice {
     private String id;
     private String address;
     private String date;
     private String platform;
     private String os;
 
-    public ApprovedDevice(String id, String location, String date, String platform, String os) {
+    ApprovedDevice(String id, String location, String date, String platform, String os) {
         this.id = id;
         this.address = location;
         this.date = date;
@@ -34,23 +34,23 @@ public class ApprovedDevice {
         this.os = os;
     }
 
-    public String getId() {
+    String getId() {
         return id;
     }
 
-    public String getAddress() {
+    String getAddress() {
         return address;
     }
 
-    public String getDate() {
+    String getDate() {
         return date;
     }
 
-    public String getPlatform() {
+    String getPlatform() {
         return platform;
     }
 
-    public String getOs() {
+    String getOs() {
         return os;
     }
 }

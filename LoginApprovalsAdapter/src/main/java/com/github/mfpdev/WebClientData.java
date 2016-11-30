@@ -17,7 +17,7 @@
 package com.github.mfpdev;
 
 
-public class WebClientData {
+class WebClientData {
     private String clientId;
     private String address;
     private double latitude;
@@ -29,7 +29,7 @@ public class WebClientData {
     public WebClientData () {
     }
 
-    public WebClientData(String clientId, String date, String os, String platform, double latitude, double longitude, String locationDescription) {
+    WebClientData(String clientId, String date, String os, String platform, double latitude, double longitude, String locationDescription) {
         this.clientId = clientId;
         this.date = date;
         this.os = os;
@@ -39,59 +39,59 @@ public class WebClientData {
         this.address = locationDescription;
     }
 
-    public String getDate() {
+    String getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    void setDate(String date) {
         this.date = date;
     }
 
-    public double getLongitude() {
+    double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(long longitude) {
+    void setLongitude(long longitude) {
         this.longitude = longitude;
     }
 
-    public double getLatitude() {
+    double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(long latitude) {
+    void setLatitude(long latitude) {
         this.latitude = latitude;
     }
 
-    public String getAddress() {
+    String getAddress() {
         return address;
     }
 
-    public void setAddress(String address) {
+    void setAddress(String address) {
         this.address = address;
     }
 
-    public String getPlatform() {
+    String getPlatform() {
         return platform;
     }
 
-    public void setPlatform(String platform) {
+    void setPlatform(String platform) {
         this.platform = platform;
     }
 
-    public String getOs() {
+    String getOs() {
         return os;
     }
 
-    public void setOs(String os) {
+    void setOs(String os) {
         this.os = os;
     }
 
-    public String getClientId() {
+    String getClientId() {
         return clientId;
     }
 
-    public void setClientId(String clientId) {
+    void setClientId(String clientId) {
         this.clientId = clientId;
     }
 }

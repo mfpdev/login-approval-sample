@@ -25,17 +25,17 @@ import com.worklight.wlclient.api.challengehandler.SecurityCheckChallengeHandler
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class UserLoginChallengeHandler extends SecurityCheckChallengeHandler {
+class UserLoginChallengeHandler extends SecurityCheckChallengeHandler {
 
-    public static final String USER_LOGIN_SECURITY_CHECK = "UserLogin";
+    static final String USER_LOGIN_SECURITY_CHECK = "UserLogin";
     private static final Logger logger = Logger.getInstance(LoginActivity.class.getName());
     private  LoginActivity loginActivity;
 
-    public void setLoginActivity(LoginActivity loginActivity) {
+    void setLoginActivity(LoginActivity loginActivity) {
         this.loginActivity = loginActivity;
     }
 
-    public UserLoginChallengeHandler() {
+    UserLoginChallengeHandler() {
         super(USER_LOGIN_SECURITY_CHECK);
     }
 

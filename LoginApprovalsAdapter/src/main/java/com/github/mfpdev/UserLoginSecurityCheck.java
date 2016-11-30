@@ -79,12 +79,12 @@ public class UserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
         return challenge;
     }
 
-    public boolean isDone() {
+    boolean isDone() {
         Boolean done = this.registrationContext.getRegisteredPublicAttributes().get(USER_LOGIN_DONE);
         return done != null && done;
     }
 
-    public void setDone (boolean done) {
+    protected void setDone(boolean done) {
         this.registrationContext.getRegisteredPublicAttributes().put(USER_LOGIN_DONE, done);
     }
 
@@ -93,15 +93,15 @@ public class UserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
         super.setState(STATE_EXPIRED);
     }
 
-    public boolean isSuccess() {
+    protected boolean isSuccess() {
         return super.getState().equals(STATE_SUCCESS);
     }
 
-    public AuthenticatedUser getUser() {
+    AuthenticatedUser getUser() {
         return registrationContext.getRegisteredUser();
     }
 
-    public String getSecurityCheckName () {
+    String getSecurityCheckName() {
         return this.getName();
     }
 }

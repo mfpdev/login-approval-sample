@@ -43,15 +43,22 @@ import static com.github.mfpdev.Constants.*;
 /**
  * Created by ishaib on 22/11/2016.
  */
-public class HttpSenderUtils {
+class HttpSenderUtils {
 
     private static CloseableHttpClient httpclient = HttpClients.createDefault();
 
     static Logger logger = Logger.getLogger(LoginApprovalsAdapterResource.class.getName());
 
-     static boolean sendRefreshEvent(String nodeServerURL, String uuid, String event) {
+    /**
+     * Sends refresh events to node.js server endpoint. The node.js will notify the web client through web socket (using socket.io)
+     * @param nodeServerURL
+     * @param clientId
+     * @param event
+     * @return true if succes
+     */
+     static boolean sendRefreshEvent(String nodeServerURL, String clientId, String event) {
          boolean status = false;
-         nodeServerURL = nodeServerURL + "/refresh/" + uuid + "/" + event;
+         nodeServerURL = nodeServerURL + "/refresh/" + clientId + "/" + event;
          HttpGet httpGet = new HttpGet(nodeServerURL);
          CloseableHttpResponse response = null;
          try {
@@ -67,7 +74,15 @@ public class HttpSenderUtils {
          return status;
      }
 
-     static String getOAuthTokenForPush (String serverURL, String credentials, String appId) throws IOException {
+    /**
+     * Fetch the access token from MF server for sendign push notification
+     * @param serverURL
+     * @param credentials
+     * @param appId
+     * @return
+     * @throws IOException
+     */
+     static String fetchOAuthTokenForPush(String serverURL, String credentials, String appId) throws IOException {
         String token = null;
         String url = serverURL + "/mfp/api/az/v1/token";
         HttpPost httpPost = new HttpPost(url);
@@ -89,6 +104,17 @@ public class HttpSenderUtils {
         return token;
     }
 
+    /**
+     * Sending approval push notification
+     * @param serverURL
+     * @param webClientData
+     * @param appIdentifier
+     * @param deviceId
+     * @param userId
+     * @param accessToken
+     * @return
+     * @throws IOException
+     */
     static int sendApprovalPushNotification (String serverURL, WebClientData webClientData, String appIdentifier, String deviceId, String userId, String accessToken) throws IOException {
         String url = serverURL + "/imfpush/v1/apps/" + appIdentifier + "/messages";
         HttpPost httpPost = new HttpPost(url);

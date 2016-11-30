@@ -8,9 +8,9 @@
         android:id="@+id/revokeButton"
         android:layout_width="25dp"
         android:layout_marginRight="10dp"
-        android:layout_height="20dp"
+        android:layout_height="25dp"
         android:layout_gravity="right|center_vertical"
-        android:background="@drawable/delete" />
+        android:background="@drawable/revoke" />
 
     <LinearLayout android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:text="Example application"
-            android:textSize="13sp" />
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/secondLine"
@@ -30,7 +30,7 @@
             android:layout_height="30dip"
             android:ellipsize="marquee"
             android:text="Description"
-            android:textSize="10sp" />
+            android:textSize="12sp" />
 
     </LinearLayout>
 </LinearLayout>
