@@ -107,7 +107,7 @@ public class WebUserLoginSecurityCheck extends UserAuthenticationSecurityCheck {
             super.introspect(scope, response);
         }
     }
-    
+
     private boolean isApprovedWebClient() {
         String approved = registrationContext.getRegisteredPublicAttributes().get(APPROVED_KEY);
         return approved != null && approved.equals(APPROVED);

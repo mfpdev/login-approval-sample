@@ -20,8 +20,8 @@ var cfenv = require('cfenv');
 
 var app = express();
 var http = require('http').Server(app);
-//var httpProxy = require('http-proxy');
-//var fs = require('fs');
+var httpProxy = require('http-proxy');
+var fs = require('fs');
 var io = require('socket.io')(http);
 
 var appEnv = cfenv.getAppEnv();
@@ -66,11 +66,11 @@ http.listen(appEnv.port, '0.0.0.0', function () {
   console.log("server starting on " + appEnv.url);
 });
 
-/*httpProxy.createServer({
+httpProxy.createServer({
   ssl: {
     key: fs.readFileSync('server.key', 'utf8'),
     cert: fs.readFileSync('server.crt', 'utf8')
   },
   target: 'http://localhost:6004',
   secure: true // Depends on your needs, could be false. 
-}).listen(8009);*/
+}).listen(8443);

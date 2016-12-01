@@ -25,7 +25,7 @@ import com.worklight.wlclient.api.WLClient;
  * Created by ishaib on 23/11/2016.
  */
 
-class ApprovalsApplication extends Application {
+public class ApprovalsApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
