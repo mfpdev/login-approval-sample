@@ -92,7 +92,7 @@ class HttpSenderUtils {
 
         List<NameValuePair> params = new ArrayList<>(2);
         params.add(new BasicNameValuePair("grant_type", "client_credentials"));
-        params.add(new BasicNameValuePair("scope", "messages.write and push.application." + appId));
+        params.add(new BasicNameValuePair("scope", "messages.write push.application." + appId));
         httpPost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
 
         CloseableHttpResponse response = httpclient.execute(httpPost);
