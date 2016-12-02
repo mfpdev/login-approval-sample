@@ -33,12 +33,27 @@
 * Register and configure the apps in [MobileFirst Foundation Console](http://localhost:9080/mfpconsole/)
   * Configure the Firebase Cloud Messaging by following [this link](https://mobilefirstplatform.ibmcloud.com/tutorials/en/foundation/8.0/notifications/sending-notifications/#google-cloud-messaging--firebase-cloud-messaging)
 
+
+  ![Push Configuration](images/configurePush.png)
+
+  * Add confidential client with the following data:
+    * Client ID: **test**
+    * Client Secret: **test**
+    * Allowed Scope: **push.mobileclient**
+
+    >The above confidential client will be used by security check code to get an access token with scope that allow sending push notifications.
+
+![Confidential Client](images/confidentialClient.png)
+
+
+
+
   * Import the apps configuration:
     * From the action menu choose `Import Application` and select `export_applications_com.github.mfpdev.loginapprovals_web_none.zip` under `login-approvals/config` folder and press on deploy on the next screen.
 
-![Import Application](images/importApp.png)
+![Import Application](images/importApplication.gif)
 
-![Import Application](images/importApp2.png)
+
 
 * Your applications (Android and Web) is now registered and configured.
 
@@ -50,6 +65,8 @@
 > Working with **geolocation** api in browsers:
 Please note that you if you are not connect to localhost you may need a secure connection to use the **geolocation** api.
 [To learn more about it please read the following](https://developers.google.com/web/updates/2016/04/geolocation-on-secure-contexts-only). There is already httpProxy for https which bind to port 8443 in **app.js**
+
+> Safari browsers will need secure connection even for localhost
 
 
   ### Supported Levels
