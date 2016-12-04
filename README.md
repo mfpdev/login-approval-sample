@@ -3,7 +3,10 @@
 This sample implements a push-based, one-tap experience to verify your identity pattern with [IBM MobileFirst Foundation](https://mobilefirstplatform.ibmcloud.com). An user with logged in application gets a push notification for any login which made on untrusted web browser. From the app the user can approve or deny the login.  The app then show list of all logged in browsers with details like location, time and platform.  The user can revoke each of them.
 
 ## Demo
-[![IMAGE ALT TEXT](http://img.youtube.com/vi/ajumb5iOblE/0.jpg)](http://www.youtube.com/watch?v=ajumb5iOblE "Login Approvals with IBM MobileFirst Foundation")
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=ajumb5iOblE" target="_blank"><img src="http://img.youtube.com/vi/ajumb5iOblE/0.jpg"
+alt="Add Login Approvals to your digital channels with IBM Mobile-First Foundation
+" width="480" height="360" border="2" />
+</a>
 
 ## Prerequisites
 
