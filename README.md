@@ -9,9 +9,8 @@ This sample implements a push-based, one-tap experience to verify your identity 
 
 1. [Installed Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 2. [Install NodeJS / npm](https://docs.npmjs.com/getting-started/installing-node)
-3. [Install MobileFirst Platform Foundation 8.0 Server](https://mobilefirstplatform.ibmcloud.com/tutorials/en/foundation/8.0/installation-configuration/development/mobilefirst/)
-4. [Set up the Android development environment](https://mobilefirstplatform.ibmcloud.com/tutorials/en/foundation/8.0/installation-configuration/development/android/)
 5. [Pre-installed IBM MobileFirst Platform development environment](https://mobilefirstplatform.ibmcloud.com/tutorials/en/foundation/8.0/setting-up-your-development-environment/).
+4. [Set up the Android development environment](https://mobilefirstplatform.ibmcloud.com/tutorials/en/foundation/8.0/installation-configuration/development/android/)
 6. [Understanding the IBM MobileFirst Foundation Authentication and Security](https://mobilefirstplatform.ibmcloud.com/tutorials/en/foundation/8.0/authentication-and-security/).
 7. [Understanding the IBM MobileFirst Foundation Java Adapters](https://mobilefirstplatform.ibmcloud.com/tutorials/en/foundation/8.0/adapters/java-adapters/).
 8. [Understanding the IBM MobileFirst Foundation Push Notifications](https://mobilefirstplatform.ibmcloud.com/tutorials/en/foundation/8.0/notifications/).
@@ -64,7 +63,7 @@ This sample implements a push-based, one-tap experience to verify your identity 
 
 * Your applications (Android and Web) is now registered and configured.
 
-* Install web app:
+* Install the web app:
   * From a **Command-line**, navigate to the **node-web-app** project's root folder
      * Build by executing `npm install`
      * Run the Web App by executing `npm start`
