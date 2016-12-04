@@ -1,5 +1,10 @@
 # Add Login Approvals to your Digital Channels with MobileFirst Foundation
 
+This sample implements a push-based, one-tap experience to verify your identity pattern with [IBM MobileFirst Foundation](https://mobilefirstplatform.ibmcloud.com). An user with logged in application gets a push notification for any login which made on untrusted web browser. From the app the user can approve or deny the login.  The app then show list of all logged in browsers with details like location, time and platform.  The user can revoke each of them.
+
+## Demo
+[![IMAGE ALT TEXT](http://img.youtube.com/vi/ajumb5iOblE/0.jpg)](http://www.youtube.com/watch?v=ajumb5iOblE "Login Approvals with IBM MobileFirst Foundation")
+
 ## Prerequisites
 
 1. [Installed Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
@@ -59,17 +64,24 @@
 
 * Your applications (Android and Web) is now registered and configured.
 
-* Run the application:
+* Install web app:
+  * From a **Command-line**, navigate to the **node-web-app** project's root folder
+     * Build by executing `npm install`
+     * Run the Web App by executing `npm start`
 
-
-
-
+* Run app:
+  * From Android Studio import the Android project from **LoginApprovals** folder
+  * Run the application.
+  * Go to the web browser and navigate to (http://localhost:6004)[http://localhost:6004] or to (https://localhost:8443)[https://localhost:8443]
+  * Login first on your Android app (username == password) and then login with the same user in the web.
 
 
 > Working with **geolocation** api in browsers:
 Please note that you if you are not connect to localhost you may need a secure connection to use the **geolocation** api.
 [To learn more about it please read the following](https://developers.google.com/web/updates/2016/04/geolocation-on-secure-contexts-only). There is already httpProxy for https which bind to port 8443 in **app.js**
 
+## Architecture
+![Architecture](images/LoginApprovals.png)
 
   ### Supported Levels
   IBM MobileFirst Platform Foundation 7.1
