@@ -84,7 +84,7 @@ Please note that you if you are not connect to localhost you may need a secure c
 ![Architecture](images/LoginApprovals.png)
 
 ### Supported Levels
-IBM MobileFirst Platform Foundation 7.1
+IBM MobileFirst Foundation 8.0
 
 ### License
 Copyright 2016 IBM Corp.
