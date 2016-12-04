@@ -1,22 +1,21 @@
-# Add Login Approvals to your Digital Channels with MobileFirst Foundation
+# Add Login Approvals to Your Digital Channels with MobileFirst Foundation
 
-This sample implements a push-based, one-tap experience to verify your identity pattern with [IBM MobileFirst Foundation](https://mobilefirstplatform.ibmcloud.com). An user with logged in application gets a push notification for any login which made on untrusted web browser. From the app the user can approve or deny the login.  The app then show list of all logged in browsers with details like location, time and platform.  The user can revoke each of them.
+This sample implements a push-based, one-tap experience to verify user identity with [IBM MobileFirst Foundation](https://mobilefirstplatform.ibmcloud.com). A mobile app with a logged in user gets a push notification for any login request made from untrusted web browser. The user can approve or deny the login request.  The app then shows a list trusted browsers with details like location, time and platform.  Later the user can revoke any of the browser.
 
 ## Demo
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=ajumb5iOblE" target="_blank"><img src="http://img.youtube.com/vi/ajumb5iOblE/0.jpg"
 alt="Add Login Approvals to your digital channels with IBM Mobile-First Foundation
-" width="480" height="360" border="2" />
-</a>
+" width="480" height="360" border="2" /></a>
 
 ## Prerequisites
 
 1. [Installed Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 2. [Install NodeJS / npm](https://docs.npmjs.com/getting-started/installing-node)
-5. [Pre-installed IBM MobileFirst Platform development environment](https://mobilefirstplatform.ibmcloud.com/tutorials/en/foundation/8.0/setting-up-your-development-environment/).
+5. [Pre-installed IBM MobileFirst Platform development environment](https://mobilefirstplatform.ibmcloud.com/tutorials/en/foundation/8.0/setting-up-your-development-environment/)
 4. [Set up the Android development environment](https://mobilefirstplatform.ibmcloud.com/tutorials/en/foundation/8.0/installation-configuration/development/android/)
-6. [Understanding the IBM MobileFirst Foundation Authentication and Security](https://mobilefirstplatform.ibmcloud.com/tutorials/en/foundation/8.0/authentication-and-security/).
-7. [Understanding the IBM MobileFirst Foundation Java Adapters](https://mobilefirstplatform.ibmcloud.com/tutorials/en/foundation/8.0/adapters/java-adapters/).
-8. [Understanding the IBM MobileFirst Foundation Push Notifications](https://mobilefirstplatform.ibmcloud.com/tutorials/en/foundation/8.0/notifications/).
+6. [Understanding the IBM MobileFirst Foundation Authentication and Security](https://mobilefirstplatform.ibmcloud.com/tutorials/en/foundation/8.0/authentication-and-security/)
+7. [Understanding the IBM MobileFirst Foundation Java Adapters](https://mobilefirstplatform.ibmcloud.com/tutorials/en/foundation/8.0/adapters/java-adapters/)
+8. [Understanding the IBM MobileFirst Foundation Push Notifications](https://mobilefirstplatform.ibmcloud.com/tutorials/en/foundation/8.0/notifications/)
 
 ## Running the sample
 
@@ -29,8 +28,9 @@ alt="Add Login Approvals to your digital channels with IBM Mobile-First Foundati
 
 * Deploy the `LoginApprovalsAdapter` adapter:
    * Build and deploy the adapter using mfpdev CLI:
-     * From a **Command-line**, navigate to the **LoginApprovalsAdapter** project's root folder
-     * Build by executing `mfpdev adapter deploy`
+     * Open a **Command-line** terminal, navigate to the **LoginApprovalsAdapter** project's root folder
+     * Build by executing `mfpdev adapter build`
+     * Deploy by executing `mfpdev adapter deploy`
    * This adapter contains the following:
      * LoginApprovalsAdapter - resource adapter
      * UserLogin - security check
@@ -50,16 +50,16 @@ alt="Add Login Approvals to your digital channels with IBM Mobile-First Foundati
 
   ![Push Configuration](images/configurePush.png)
 
-  * Add confidential client with the following data:
+  * Add a confidential client with the following data:
 
 | Title   |      Value      |
 |----------|:-------------|
 | Client ID |  approval|
 | Client Secret |    approval   |
-| Allowed Scope |push.application.com.github.mfpdev.loginapprovals **messages.write |   
+| Allowed Scope |push.application.com.github.mfpdev.loginapprovals messages.write |   
 
 
-  > The above confidential client will be used by security check code to get an access token with scope that allow sending push notifications. for more information see [Sending Notifications in MobileFirst Foundation 8.0](https://mobilefirstplatform.ibmcloud.com/tutorials/en/foundation/8.0/notifications/sending-notifications/#sending-the-notification).
+  > The confidential client will be used to get an access token with a scope that allows sending push notifications. for more information see [Sending Notifications in MobileFirst Foundation 8.0](https://mobilefirstplatform.ibmcloud.com/tutorials/en/foundation/8.0/notifications/sending-notifications/#sending-the-notification).
 
 ![Confidential Client](images/confidential.png)
 
@@ -67,20 +67,20 @@ alt="Add Login Approvals to your digital channels with IBM Mobile-First Foundati
 * Your applications (Android and Web) is now registered and configured.
 
 * Install the web app:
-  * From a **Command-line**, navigate to the **node-web-app** project's root folder
+  * Open a **Command-line** terminal, navigate to the **node-web-app** project's root folder
      * Build by executing `npm install`
-     * Run the Web App by executing `npm start`
+     * Run the web app by executing `npm start`
 
-* Run app:
+* Run the app:
   * From Android Studio import the Android project from **LoginApprovals** folder
   * Run the application.
-  * Go to the web browser and navigate to (http://localhost:6004)[http://localhost:6004] or to (https://localhost:8443)[https://localhost:8443]
-  * Login first on your Android app (username == password) and then login with the same user in the web.
+  * Go to the web browser and navigate to [http://localhost:6004](http://localhost:6004) or to [https://localhost:8443](https://localhost:8443)
+  * Login first on your Android app (username == password) and then login with the same user in the browser.
 
 
 > Working with **geolocation** api in browsers:
-Please note that you if you are not connect to localhost you may need a secure connection to use the **geolocation** api.
-[To learn more about it please read the following](https://developers.google.com/web/updates/2016/04/geolocation-on-secure-contexts-only). There is already httpProxy for https which bind to port 8443 in **app.js**
+If you are not connected to http://localhost you may need a secure connection to use the **geolocation** api.
+To learn more about it read the following [link](https://developers.google.com/web/updates/2016/04/geolocation-on-secure-contexts-only). This sample already has httpProxy for https which binds to port 8443 in **app.js**.
 
 ## Architecture
 ![Architecture](images/LoginApprovals.png)
