@@ -40,7 +40,7 @@ This sample implements a push-based, one-tap experience to verify your identity 
   * Import the apps configuration
     * From the action menu choose `Import Application` and select `export_applications_com.github.mfpdev.loginapprovals_web_none.zip` under `login-approvals/config` folder and press on deploy on the next screen.
 
-![Import Application](images/importApplication.gif)
+![Import Application](images/ImportApplication.gif)
 
 
   * Configure the Firebase Cloud Messaging by following [this link](https://mobilefirstplatform.ibmcloud.com/tutorials/en/foundation/8.0/notifications/sending-notifications/#google-cloud-messaging--firebase-cloud-messaging).
