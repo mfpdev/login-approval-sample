@@ -8,6 +8,7 @@
   "dependencies": {
     "cfenv": "1.0.x",
     "express": "4.13.x",
+    "http-proxy": "^1.16.1",
     "ibm-mfp-web-sdk": "^8.0.2016051608",
     "request": "latest",
     "requirejs": "latest",
