@@ -3,9 +3,7 @@
 This sample implements a push-based, one-tap experience to verify user identity with [IBM MobileFirst Foundation](https://mobilefirstplatform.ibmcloud.com). A mobile app with a logged in user gets a push notification for any login request made from untrusted web browser. The user can approve or deny the login request.  The app then shows a list trusted browsers with details like location, time and platform.  Later the user can revoke any of the browser.
 
 ## Demo
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=ajumb5iOblE" target="_blank"><img src="http://img.youtube.com/vi/ajumb5iOblE/0.jpg"
-alt="Add Login Approvals to your digital channels with IBM Mobile-First Foundation
-" width="480" height="360" border="2" /></a>
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=ajumb5iOblE" target="_blank"><img src="http://img.youtube.com/vi/ajumb5iOblE/0.jpg" alt="Add Login Approvals to your digital channels with IBM Mobile-First Foundation" width="480" height="360" border="2" /></a>
 
 ## Prerequisites
 
@@ -32,14 +30,14 @@ alt="Add Login Approvals to your digital channels with IBM Mobile-First Foundati
      * Build by executing `mfpdev adapter build`
      * Deploy by executing `mfpdev adapter deploy`
    * This adapter contains the following:
-     * LoginApprovalsAdapter - resource adapter
-     * UserLogin - security check
-     * WebUserLogin - security check   
+     * **LoginApprovalsAdapter** - JAX-RS resource adapter
+     * **UserLogin** - Security check
+     * **WebUserLogin** - Security check   
 
 
 * Register and configure the apps in [MobileFirst Foundation Console](http://localhost:9080/mfpconsole/):
 
-  * Import the apps configuration
+  * Import the apps configuration:
     * From the action menu choose `Import Application` and select `export_applications_com.github.mfpdev.loginapprovals_web_none.zip` under `login-approvals/config` folder and press on deploy on the next screen.
 
 ![Import Application](images/ImportApplication.gif)
