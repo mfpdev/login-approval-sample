@@ -83,6 +83,8 @@ To learn more about it read the following [link](https://developers.google.com/w
 ## Architecture
 ![Architecture](images/LoginApprovals.png)
 
+> For more info see the [following blog](https://mobilefirstplatform.ibmcloud.com/blog/2016/12/04/login-approvals-with-ibm-mobilefirst-foundation/)
+
 ### Supported Levels
 IBM MobileFirst Foundation 8.0
 
