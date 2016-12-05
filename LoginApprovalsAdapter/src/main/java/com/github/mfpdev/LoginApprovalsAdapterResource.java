@@ -58,7 +58,7 @@ public class LoginApprovalsAdapterResource {
 	@Context
 	AdapterSecurityContext securityContext;
 
-	@ApiOperation(value = "Get approved web instances", notes = "Return all the approved app instances")
+	@ApiOperation(value = "Get approved web instances", notes = "Return all the approved web instances")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "A JSON object containing all the approved app instances.") })
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -87,7 +87,7 @@ public class LoginApprovalsAdapterResource {
 		return allClients;
 	}
 
-	@ApiOperation(value = "Approve web client", notes = "approve web client login")
+	@ApiOperation(value = "Approve web client", notes = "approve or deny a new web client login")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Return true after send the refresh event to the client") })
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -157,7 +157,7 @@ public class LoginApprovalsAdapterResource {
 	@GET
 	@OAuthSecurity (scope = "approvedWebUserLogin")
 	@Produces("application/json")
-	@ApiOperation(value = "Get authenticated user resource",
+	@ApiOperation(value = "Get authenticated user - the protected resource used for this sample",
 			notes = "Sample resource which protected with webLogin security check",
 			httpMethod = "GET",
 			response = Void.class
